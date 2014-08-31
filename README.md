@@ -140,6 +140,15 @@ anotherQueue(op4, op5);
 queue.start();
 anotherQueue.start();
 ```
+
+We can be notified of the number of operations running on the queue using an observer:
+
+```javascript
+queue.addObserver(function(numRunningOperations, numQueuedOperations) {
+	// ...
+});
+```
+
 ### Logging
 
 We can enable logging at multiple levels enabling us to monitor things such as num operations running, num operations running per queue and the success and failure of operations.
