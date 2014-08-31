@@ -228,6 +228,50 @@ var operations          = require('operations'),
 	Log                 = operations.Log;
 ```
 
+## Contributing
+
+To get started first clone the repository:
+
+```bash
+git clone git@github.com:mtford90/operations.js.git
+```
+
+Then install the dependencies:
+
+```bash
+cd operations.js
+npm install
+npm install grunt-cli -g
+```
+
+### node.js tests
+
+We can run the standard batch of tests for node.js by running:
+
+```bash
+grunt test
+```
+
+And run them in the browser using:
+
+```bash
+grunt testBrowser
+```
+
+The browser target can be configured in `karma/karma-unit.tpl.js`.
+
+### Watch
+
+We can watch for changes and run the tests automatically by running:
+
+```bash
+grunt watch
+grunt watchBrowser
+```
+
+Run these commands in two seperate console instances and on any change we can then run the tests against node and the browser simultaneously.
+
+
 ## AngularJS bindings
 
 An AngularJS version is available [here](https://github.com/mtford90/operations.angular.js).
