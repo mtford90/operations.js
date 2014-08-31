@@ -23,6 +23,8 @@ function Operation() {
     this.result = null;
     this.running = false;
     this.purpose = '';
+    this.dependencies = [];
+    this._mustSucceed = [];
 
     Object.defineProperty(this, 'failed', {
         get: function () {
@@ -119,6 +121,30 @@ Operation.prototype.start = function () {
             if (self.completion) {
                 self.completion.call(this);
             }
+        }
+    }
+};
+
+Operation.prototype.addDependency = function () {
+    var self = this;
+    if (arguments.length == 1) {
+        this.dependencies.push(arguments[0]);
+    }
+    else if (arguments.length) {
+        var args = arguments;
+        var lastArg = args[args.length-1];
+        var mustSucceed = false;
+        if (typeof(lastArg) == 'boolean') {
+            args = Array.prototype.slice.call(args, 0, args.length - 1);
+            mustSucceed = lastArg;
+        }
+        _.each(args, function (arg) {
+            self.dependencies.push(arg);
+        });
+        if (mustSucceed) {
+            _.each(args, function (arg) {
+                self._mustSucceed.push(arg);
+            })
         }
     }
 };
