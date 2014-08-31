@@ -186,6 +186,17 @@ INFO [operations.js]: There are 2 running operations.
 INFO [operations.js]: There are now 3 running operations and 1 queued operation across 2 queues. 3 operations are running external to a queue.
 ```
 
+### Testing
+
+When testing code using operations its usually a good idea to ensure that tests do not clobber each other:
+
+```javascript
+afterEach(function () {
+	var numOperationsRunning = Operation.numOperationsRunning;
+	assert(!numOperationsRunning, 'There are still ' + numOperationsRunning.toString() + ' operations running);
+});
+```
+
 ## Installation
 
 ### Browser

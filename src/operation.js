@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 function Operation() {
     if (!this) {
         return new (Function.prototype.bind.apply(Operation, arguments));
@@ -21,6 +23,7 @@ function Operation() {
     this.result = null;
     this.running = false;
     this.purpose = '';
+
     Object.defineProperty(this, 'failed', {
         get: function () {
             return !!self.error;
@@ -28,22 +31,85 @@ function Operation() {
         enumerable: true,
         configurable: true
     });
+
+    Object.defineProperty(this, 'composite', {
+        get: function () {
+            return self.work instanceof Operation ||
+                Object.prototype.toString.call(self.work) === '[object Array]'
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(this, 'numOperationsRemaining', {
+        get: function () {
+            if (self.work instanceof Operation) {
+                return self.work.completed ? 0 : 1
+            }
+            else if (Object.prototype.toString.call(self.work) === '[object Array]') {
+                return _.reduce(self.work, function (memo, op) {
+                    if (!op.completed) {
+                        return memo + 1;
+                    }
+                    return memo;
+                }, 0);
+            }
+            else {
+                return null;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    })
+
 }
+
+Operation.prototype._startSingle = function () {
+    var self = this;
+    this.work(function (err, payload) {
+        self.result = payload;
+        self.error = err;
+        self.completed = true;
+        self.running = false;
+        if (self.completion) {
+            self.completion.call(this);
+        }
+    });
+};
+
+Operation.prototype._startComposite = function () {
+    var self = this;
+    var operations = self.work instanceof Operation ? [self.work] : self.work;
+    _.each(operations, function (op) {
+        op.completion = function () {
+            var numOperationsRemaining = self.numOperationsRemaining;
+            if (!numOperationsRemaining) {
+                var errors = _.pluck(operations, 'error');
+                var results = _.pluck(operations, 'result');
+                self.result = _.some(results) ? results : null;
+                self.error = _.some(errors) ? errors : null;
+                self.completed = true;
+                self.running = false;
+                if (self.completion) {
+                    self.completion();
+                }
+            }
+        };
+        op.start();
+    });
+};
 
 Operation.prototype.start = function () {
     if (!this.running && !this.completed) {
         this.running = true;
         var self = this;
         if (this.work) {
-            this.work(function (err, payload) {
-                self.result = payload;
-                self.error = err;
-                self.completed = true;
-                self.running = false;
-                if (self.completion) {
-                    self.completion.call(this);
-                }
-            });
+            if (this.composite) {
+                this._startComposite();
+            }
+            else {
+                this._startSingle();
+            }
         }
         else {
             self.result = null;
@@ -54,20 +120,7 @@ Operation.prototype.start = function () {
                 self.completion.call(this);
             }
         }
-
     }
-};
-
-Operation.prototype._dump = function (asJson) {
-    var obj = {
-        purpose: this.purpose,
-        name: this.name,
-        error: this.error,
-        completed: this.completed,
-        failed: this.failed,
-        running: this.running
-    };
-    return asJson ? JSON.stringify(obj, null, 4) : obj;
 };
 
 module.exports.Operation = Operation;
