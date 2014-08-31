@@ -1,0 +1,24 @@
+{
+  "name": "operations.js",
+  "version": "0.1.0",
+  "description": "A library for managing complex chains of asynchronous operations in Javascript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mtford90/operations.js"
+  },
+  "keywords": [
+    "async",
+    "operation",
+    "javascript"
+  ],
+  "author": "Michael Ford",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mtford90/operations.js/issues"
+  },
+  "homepage": "https://github.com/mtford90/operations.js"
+}
