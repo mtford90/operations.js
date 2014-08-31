@@ -29,3 +29,7 @@ bower_components
 
 # Jetbrains
 .idea
+
+# Gruntfile.js
+build
+bin

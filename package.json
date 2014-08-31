@@ -4,7 +4,7 @@
   "description": "A library for managing complex chains of asynchronous operations in Javascript.",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "./node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,35 @@
   "bugs": {
     "url": "https://github.com/mtford90/operations.js/issues"
   },
-  "homepage": "https://github.com/mtford90/operations.js"
+  "homepage": "https://github.com/mtford90/operations.js",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "load-grunt-tasks": "~0.6.0",
+    "time-grunt": "~1.0.0",
+    "grunt-cli": "~0.1.13",
+    "grunt-contrib-watch": "~0.6.1",
+    "karma": "~0.12.23",
+    "mocha": "~1.21.4",
+    "chai": "~1.9.1",
+    "karma-mocha": "~0.1.9",
+    "grunt-karma": "~0.8.3",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-contrib-concat": "~0.5.0",
+    "grunt-contrib-uglify": "~0.5.1",
+    "karma-firefox-launcher": "~0.1.3",
+    "karma-chai": "~0.1.0",
+    "glob": "~4.0.5",
+    "sinon": "~1.10.3",
+    "grunt-mocha-test": "~0.11.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "karma-phantomjs-launcher": "~0.1.4",
+    "karma-chrome-launcher": "~0.1.4",
+    "chai-things": "~0.2.0",
+    "karma-chai-things": "~0.1.3",
+    "browserify": "~5.11.0",
+    "grunt-browserify": "~3.0.0"
+  },
+  "dependencies": {
+    "underscore": "~1.7.0"
+  }
 }
