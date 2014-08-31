@@ -1,50 +1,90 @@
 /*global describe,it,beforeEach */
-var BaseOperation;
+var Operation;
 if (!assert) { // node.js tests
     var assert = require('chai').assert;
-    BaseOperation = require('../src/base').BaseOperation;
+    Operation = require('../src/operation').Operation;
 }
 else { // Browser tests
-    BaseOperation = op.BaseOperation;
+    Operation = op.Operation;
 }
 
-describe('BaseOperation', function () {
+
+
+describe('Operation', function () {
 
     var op;
 
-    beforeEach(function () {
-        op = new BaseOperation('op');
-    });
+    describe('initialisation', function () {
 
-    describe('initial state', function () {
-        it('should not be completed', function () {
-            assert.notOk(op.completed);
+        describe('constructor', function () {
+            it('name given', function () {
+                op = new Operation('op');
+                assert.equal(op.name, 'op');
+            });
+
+            it('name and work given', function () {
+                var work = function () {};
+                op = new Operation('op', work);
+                assert.equal(op.name, 'op');
+                assert.equal(op.work, work);
+            });
+
+            it('name, work and completion given', function () {
+                var work = function () {};
+                var completion = function () {};
+                op = new Operation('op', work, completion);
+                assert.equal(op.name, 'op');
+                assert.equal(op.work, work);
+                assert.equal(op.completion, completion);
+            });
+
+            it('work and completion given', function () {
+                var work = function () {};
+                var completion = function () {};
+                op = new Operation(work, completion);
+                assert.notOk(op.name);
+                assert.equal(op.work, work);
+                assert.equal(op.completion, completion);
+            });
         });
 
-        it('should be no result', function () {
-            assert.notOk(op.result);
+        describe('initial state', function () {
+            beforeEach(function () {
+                op = new Operation();
+            });
+            it('should not be completed', function () {
+                assert.notOk(op.completed);
+            });
+
+            it('should be no result', function () {
+                assert.notOk(op.result);
+            });
+
+            it('should not be running', function () {
+                assert.notOk(op.running);
+            });
+
+            it('should not have an error', function () {
+                assert.notOk(op.error);
+            });
+
+            it('should not have failed', function () {
+                assert.notOk(op.failed);
+            });
+
+            it('no name', function () {
+                assert.notOk(op.name);
+            });
         });
 
-        it('should not be running', function () {
-            assert.notOk(op.running);
-        });
 
-        it('should not have an error', function () {
-            assert.notOk(op.error);
-        });
 
-        it('should have a name', function () {
-            assert.equal(op.name, 'op');
-        });
-
-        it('should not have failed', function () {
-            assert.notOk(op.failed);
-        })
     });
 
     describe('running state', function () {
 
         beforeEach(function () {
+            op = new Operation('op');
             op.work = function (callback) {
                 setTimeout(function () {
                     callback();
@@ -79,10 +119,12 @@ describe('BaseOperation', function () {
 
         describe('no error', function () {
             beforeEach(function (done) {
+                op = new Operation('op');
+
                 op.work = function (callback) {
                     callback(null, 'xyz');
                 };
-                op.completionCallback = function () {
+                op.completion = function () {
                     done();
                 };
                 op.start();
@@ -111,10 +153,12 @@ describe('BaseOperation', function () {
 
         describe('error', function () {
             beforeEach(function (done) {
+                op = new Operation('op');
+
                 op.work = function (callback) {
                     callback('error');
                 };
-                op.completionCallback = function () {
+                op.completion = function () {
                     done();
                 };
                 op.start();

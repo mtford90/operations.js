@@ -1,4 +1,4 @@
-var BaseOperation = require('./base').BaseOperation;
+var Operation = require('./operation').Operation;
 var _ = require('underscore');
 
 function CompositeOperation(name, operations, completionCallback) {
@@ -33,10 +33,10 @@ function CompositeOperation(name, operations, completionCallback) {
         configurable: true
     });
 
-    BaseOperation.call(this, name, work, completionCallback);
+    Operation.call(this, name, work, completionCallback);
 }
 
-CompositeOperation.prototype = Object.create(BaseOperation.prototype);
+CompositeOperation.prototype = Object.create(Operation.prototype);
 
 CompositeOperation.prototype._dump = function (asJson) {
     var self = this;

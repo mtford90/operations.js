@@ -1,11 +1,11 @@
-var BaseOperation = require('./base').BaseOperation;
+var Operation = require('./operation').Operation;
 var CompositeOperation = require('./composite').CompositeOperation;
 var OperationQueue = require('./composite').OperationQueue;
 
 
 if (window) {
     window.op = {
-        BaseOperation: BaseOperation,
+        Operation: Operation,
         CompositeOperation: CompositeOperation,
         OperationQueue: OperationQueue
     }
