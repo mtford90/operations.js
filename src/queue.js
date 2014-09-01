@@ -1,3 +1,4 @@
+
 var _ = require('underscore');
 
 var log = require('./log');
@@ -162,7 +163,7 @@ OperationQueue.prototype.stop = function (cancel) {
     this._running = false;
     if (wasRunning) {
         if (cancel) {
-        var operations = this._runningOperations.slice(0); // Clone so not fighting callbacks.
+            var operations = this._runningOperations.slice(0); // Clone so not fighting callbacks.
             _.each(operations, function (o) {
                 o.cancel();
             });

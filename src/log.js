@@ -1,16 +1,16 @@
-
+var _ = require('underscore');
 
 
 function Logger (name) {
     if (!this) return new Logger(name);
     this.name = name;
-    this.trace = constructPerformer(this, console.debug, Logger.Level.trace);
-    this.debug = constructPerformer(this, console.debug, Logger.Level.debug);
-    this.info = constructPerformer(this, console.info, Logger.Level.info);
-    this.log = constructPerformer(this, console.log, Logger.Level.info);
-    this.warn = constructPerformer(this, console.warn, Logger.Level.warning);
-    this.error = constructPerformer(this, console.error, Logger.Level.error);
-    this.fatal = constructPerformer(this, console.error, Logger.Level.fatal);
+    this.trace = constructPerformer(this, _.bind(console.debug, console), Logger.Level.trace);
+    this.debug = constructPerformer(this, _.bind(console.debug, console), Logger.Level.debug);
+    this.info = constructPerformer(this, _.bind(console.info, console), Logger.Level.info);
+    this.log = constructPerformer(this, _.bind(console.log, console), Logger.Level.info);
+    this.warn = constructPerformer(this, _.bind(console.warn, console), Logger.Level.warning);
+    this.error = constructPerformer(this, _.bind(console.error, console), Logger.Level.error);
+    this.fatal = constructPerformer(this, _.bind(console.error, console), Logger.Level.fatal);
 
 }
 
@@ -23,7 +23,6 @@ function constructPerformer (logger, f, level) {
     Object.defineProperty(performer, 'isEnabled', {
         get: function () {
             var currentLevel = logger.currentLevel();
-            console.log(currentLevel, level);
             return level >= currentLevel;
         },
         enumerable: true,

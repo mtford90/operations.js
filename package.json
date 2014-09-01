@@ -46,7 +46,9 @@
     "chai-things": "~0.2.0",
     "karma-chai-things": "~0.1.3",
     "browserify": "~5.11.0",
-    "grunt-browserify": "~3.0.0"
+    "grunt-browserify": "~3.0.0",
+    "grunt-string-replace": "~0.2.7",
+    "grunt-text-replace": "~0.3.12"
   },
   "dependencies": {
     "underscore": "~1.7.0"

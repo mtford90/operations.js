@@ -9,23 +9,31 @@ module.exports = function (grunt) {
 
         pkg: grunt.file.readJSON("package.json"),
 
-        meta: {
-            banner: '/**\n' +
-                ' * <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                ' * <%= pkg.homepage %>\n' +
-                ' *\n' +
-                ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %> - All Rights Reserved\n' +
-                ' * Unauthorized copying of this file, via any medium is strictly prohibited\n' +
-                ' * Proprietary and Confidential\n' +
-                ' */\n'
-        },
-
         mochaTest: {
             test: {
                 options: {
                     reporter: 'spec'
                 },
                 src: ['test/**/*.spec.js', 'src/**/*.spec.js']
+            }
+        },
+
+        uglify: {
+            options: {
+                mangle: true
+            },
+            dist: {
+                files: {
+                    '<%= compile_dir %>/operations-<%= pkg.version %>.min.js': ['<%= build_dir %>/operation.js']
+                }
+            }
+        },
+
+        copy: {
+            dist: {
+                files: [
+                    {src: '<%= build_dir %>/operation.js', dest: '<%= compile_dir %>/operations-<%= pkg.version %>.js'}
+                ]
             }
         },
 
@@ -65,13 +73,24 @@ module.exports = function (grunt) {
             build: {
                 files: {
                     '<%= build_dir %>/operation.js': ['src/index.js']
-                },
-                options: {
-                    external: [
-                        'underscore:_'
-                    ]
                 }
+            },
+            // Bundle underscore for karma
+            karma: {
+                files: {
+                    '<%= build_dir %>/operation-karma.js': ['src/index.js']
+                }
+            }
+        },
 
+        'replace' : {
+            dist: {
+                src: ['<%= build_dir %>/operation.js'],
+                dest: '<%= build_dir %>/operation.js',
+                replacements: [{
+                    from: /^.*require.*underscore.*\n/g,
+                    to: '\n'
+                }]
             }
         },
 
@@ -101,8 +120,9 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [ 'mochaTest:test', 'compile' ]);
 
-    grunt.registerTask('build', [
-        'browserify:build'
+    grunt.registerTask('build-test', [
+        'karmaconfig',
+        'browserify:karma'
     ]);
 
     grunt.registerTask('test', [
@@ -110,16 +130,18 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('compile', [
-        'concat:compile_js',
-        'uglify'
+        'browserify:build',
+        'replace:dist',
+        'uglify',
+        'copy:dist'
     ]);
 
     grunt.registerTask('testBrowser', [
-        'build',
+        'build-test',
         'karma:single'
     ]);
 
-    grunt.registerTask('watchBrowser', ['karma:single', 'karma:continuous',  'delta:browser']);
+    grunt.registerTask('watchBrowser', ['build-test', 'karma:single', 'karma:continuous', 'delta:browser']);
 
     function filterForJS(files) {
         return files.filter(function (file) {

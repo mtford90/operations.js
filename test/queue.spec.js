@@ -1,5 +1,5 @@
 /*global describe,it,beforeEach */
-var Operation, OperationQueue;
+var Operation, OperationQueue, _;
 if (!assert) { // node.js tests
     var assert = require('chai').assert;
     Operation = require('../src/operation').Operation;
