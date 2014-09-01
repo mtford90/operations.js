@@ -103,7 +103,7 @@ describe('OperationQueue', function () {
         it('observes on queue start', function (done) {
             q.onStart(function () {
                 assert.equal(this, q);
-                assert.ok(this.running);
+                assert.ok(this._running);
                 done();
             });
             q.start();
@@ -112,7 +112,7 @@ describe('OperationQueue', function () {
         it('observes on queue stop', function (done) {
             var observer = function () {
                 assert.equal(this, q);
-                assert.notOk(this.running);
+                assert.notOk(this._running);
                 done();
             };
             q.start();
@@ -120,6 +120,38 @@ describe('OperationQueue', function () {
             q.stop();
         });
 
+    });
+
+    describe('stop', function () {
+        var ops;
+
+        beforeEach(function () {
+            var work = function (finished) {
+                var token = setInterval(function () {
+                    if (this.cancelled) {
+                        clearTimeout(token);
+                        finished();
+                    }
+                }, 20);
+            };
+            ops = [new Operation('op1', work), new Operation('op2', work), new Operation('op3', work)];
+            q.addOperation(ops);
+            q.start();
+        });
+
+        it('cancel running operations', function () {
+            q.stop(true);
+            assert.ok(ops[0].cancelled);
+            assert.ok(ops[1].cancelled);
+            assert.notOk(ops[2].cancelled);
+        });
+
+        it('dont cancel all running operations', function () {
+            q.stop();
+            assert.notOk(ops[0].cancelled);
+            assert.notOk(ops[1].cancelled);
+            assert.notOk(ops[2].cancelled);
+        });
     });
 
 });

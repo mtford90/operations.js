@@ -36,15 +36,29 @@ describe('Cancellation', function () {
             op.start();
             setTimeout(function () {
                 op.cancel();
+                assert.ok(op.running, 'should not finish straight away');
+                assert.notOk(op.completed, 'should not complete straight away');
             }, 50);
         });
+
+
+
     });
 
     describe('composite', function () {
         var op;
-        beforeEach(function () {
-            op = new Operation([new Operation(), new Operation(), new Operation()]);
-            op.cancel();
+        beforeEach(function (done) {
+            var work = function (finished) {
+                var token = setInterval(function () {
+                    if (op.cancelled) {
+                        clearTimeout(token);
+                        finished();
+                    }
+                }, 20);
+            };
+            op = new Operation([new Operation('op1', work), new Operation('op2', work), new Operation('op2', work)]);
+            op.start();
+            op.cancel(done);
         });
         it('composite op is cancelled', function () {
             assert.ok(op.cancelled);
@@ -59,7 +73,7 @@ describe('Cancellation', function () {
                 assert.ok(subOp.completed);
                 assert.notOk(subOp.running);
             })
-        })
+        });
     });
 
     describe('dependencies', function () {

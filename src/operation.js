@@ -189,6 +189,9 @@ Operation.prototype._logCompletion = function () {
             }
             logFunc('"' + name + '" failed due to errors:', err);
         }
+        else if (this.cancelled) {
+            logFunc('"' + name + '" has been cancelled.');
+        }
         else {
             logFunc('"' + name + '" has succeeded.');
         }
@@ -210,7 +213,9 @@ Operation.prototype._logStart = function () {
     }
 };
 
+
 Operation.prototype._complete = function () {
+    var self = this;
     this.completed = true;
     var idx = Operation.running.indexOf(this);
     Operation.running.splice(idx, 1);
@@ -219,7 +224,7 @@ Operation.prototype._complete = function () {
     }
     this._logCompletion();
     _.each(this._onCompletion, function (o) {
-        o();
+        _.bind(o, self)();
     });
 };
 
@@ -297,15 +302,19 @@ Operation.prototype.onCompletion = function (o) {
     this._onCompletion.push(o);
 };
 
-Operation.prototype.cancel = function () {
-    this.cancelled = true;
-    this.running = false;
-    if (this.composite) {
-        _.each(this.work, function (subop) {
-            subop.cancel();
+Operation.prototype.cancel = function (callback) {
+    if (!this.cancelled) {
+        this.cancelled = true;
+        if (this.composite) {
+            _.each(this.work, function (subop) {
+                subop.cancel();
+            });
+        }
+        this.onCompletion(function () {
+            this.running = false;
+            if (callback) callback();
         });
     }
-    this._complete();
 };
 
 module.exports.Operation = Operation;

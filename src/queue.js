@@ -4,7 +4,7 @@ var log = require('./log');
 var Logger = log.loggerWithName('OperationQueue');
 
 
-function OperationQueue (maxConcurrentOperations) {
+function OperationQueue(maxConcurrentOperations) {
     var self = this;
     this._queuedOperations = [];
     this.maxConcurrentOperations = maxConcurrentOperations;
@@ -17,38 +17,6 @@ function OperationQueue (maxConcurrentOperations) {
     Object.defineProperty(this, 'numRunningOperations', {
         get: function () {
             return self._runningOperations.length;
-        },
-        configurable: true,
-        enumerable: true
-    });
-
-    Object.defineProperty(this, 'running', {
-        get: function () {
-            return self._running;
-        },
-        set: function (v) {
-            var oldValue = self._running;
-            var wasRunning = self._running;
-            self._running = v;
-            if (!wasRunning && self._running) {
-                self._nextOperations();
-                self._logStart();
-            }
-            else if (wasRunning && !self._running) {
-                self._logStop();
-            }
-            if (oldValue != this.running) {
-                if (this.running) {
-                    _.each(self._onStart, function (c) {
-                        _.bind(c, self)();
-                    })
-                }
-                else {
-                    _.each(self._onStop, function (c) {
-                        _.bind(c, self)();
-                    })
-                }
-            }
         },
         configurable: true,
         enumerable: true
@@ -68,7 +36,7 @@ function OperationQueue (maxConcurrentOperations) {
 
 OperationQueue.prototype._nextOperations = function () {
     var self = this;
-    while((self._runningOperations.length < self.maxConcurrentOperations) && self._queuedOperations.length) {
+    while ((self._runningOperations.length < self.maxConcurrentOperations) && self._queuedOperations.length) {
         var op = self._queuedOperations[0];
         self._runOperation(op);
     }
@@ -77,7 +45,7 @@ OperationQueue.prototype._nextOperations = function () {
 
 OperationQueue.prototype._runOperation = function (op) {
     var self = this;
-    for (var i=0;i<this._queuedOperations.length;i++) {
+    for (var i = 0; i < this._queuedOperations.length; i++) {
         if (this._queuedOperations[i] == op) {
             this._queuedOperations.splice(i, 1);
             break;
@@ -87,7 +55,9 @@ OperationQueue.prototype._runOperation = function (op) {
     op.onCompletion(function () {
         var idx = self._runningOperations.indexOf(op);
         self._runningOperations.splice(idx, 1);
-        self._nextOperations();
+        if (self.running) {
+            self._nextOperations();
+        }
         self._logStatus();
     });
     op.start();
@@ -101,16 +71,16 @@ OperationQueue.prototype._logStatus = function () {
         var numQueued = this._queuedOperations.length;
         var name = this.name || "Unnamed Queue";
         if (numRunning && numQueued) {
-            logFunc('"' + name +'" now has ' + numRunning.toString() + ' operations running and ' + numQueued.toString() + ' operations queued');
+            logFunc('"' + name + '" now has ' + numRunning.toString() + ' operations running and ' + numQueued.toString() + ' operations queued');
         }
         else if (numRunning) {
-            logFunc('"' + name +'" now has ' + numRunning.toString() + ' operations running');
+            logFunc('"' + name + '" now has ' + numRunning.toString() + ' operations running');
         }
         else if (numQueued) {
-            logFunc('"' + name +'" now has ' + numQueued.toString() + ' operations queued');
+            logFunc('"' + name + '" now has ' + numQueued.toString() + ' operations queued');
         }
         else {
-            logFunc('"' + name +'" has no operations running or queued');
+            logFunc('"' + name + '" has no operations running or queued');
         }
     }
 };
@@ -119,7 +89,7 @@ OperationQueue.prototype._logStart = function () {
     var logFunc = this._getLogFunc();
     if (Logger.info.isEnabled || this.loggingOveridden) {
         var name = this.name || "Unnamed Queue";
-        logFunc('"' + name +'" is now running');
+        logFunc('"' + name + '" is now running');
     }
 };
 
@@ -135,12 +105,12 @@ OperationQueue.prototype._logStop = function () {
     var logFunc = this._getLogFunc();
     if (Logger.info.isEnabled || this.loggingOveridden) {
         var name = this.name || "Unnamed Queue";
-        logFunc('"' + name +'" is no longer running');
+        logFunc('"' + name + '" is no longer running');
     }
 };
 
 OperationQueue.prototype._addOperation = function (op) {
-    if (this.numRunningOperations < this.maxConcurrentOperations && this.running) {
+    if (this.numRunningOperations < this.maxConcurrentOperations && this._running) {
         this._runOperation(op);
     }
     else {
@@ -160,11 +130,34 @@ OperationQueue.prototype.addOperation = function (operationOrOperations) {
 };
 
 OperationQueue.prototype.start = function () {
-    this.running = true;
+    var self = this;
+    var wasRunning = this._running;
+    this._running = true;
+    if (!wasRunning) {
+        _.each(self._onStart, function (c) {
+            _.bind(c, self)();
+        });
+        self._nextOperations();
+        self._logStart();
+    }
 };
 
-OperationQueue.prototype.stop = function () {
-    this.running = false;
+OperationQueue.prototype.stop = function (cancel) {
+    var self = this;
+    var wasRunning = this._running;
+    this._running = false;
+    if (wasRunning) {
+        if (cancel) {
+        var operations = this._runningOperations.slice(0); // Clone so not fighting callbacks.
+            _.each(operations, function (o) {
+                o.cancel();
+            });
+        }
+        self._logStop();
+        _.each(self._onStop, function (c) {
+            _.bind(c, self)();
+        });
+    }
 };
 
 OperationQueue.prototype.onStart = function (o) {
