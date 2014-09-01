@@ -43,7 +43,6 @@ function OperationQueue (maxConcurrentOperations) {
     });
 }
 
-
 OperationQueue.prototype._nextOperations = function () {
     var self = this;
     while((self._runningOperations.length < self.maxConcurrentOperations) && self._queuedOperations.length) {

@@ -11,7 +11,7 @@ else { // Browser tests
     OperationQueue = op.OperationQueue;
 }
 
-describe.only('OperationQueue', function () {
+describe('OperationQueue', function () {
 
     var q;
 

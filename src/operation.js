@@ -124,6 +124,8 @@ function Operation() {
 
 }
 
+Operation.running = [];
+
 Operation.prototype._startSingle = function () {
     var self = this;
     this.work(function (err, payload) {
@@ -188,6 +190,8 @@ Operation.prototype._logStart = function () {
 
 Operation.prototype._complete = function () {
     this.completed = true;
+    var idx = Operation.running.indexOf(this);
+    Operation.running.splice(idx, 1);
     if (this.completion) {
         _.bind(this.completion, this)();
     }
@@ -204,6 +208,7 @@ Operation.prototype.__start = function () {
         else {
             this._startSingle();
         }
+        Operation.running.push(this);
     }
     else {
         this.result = null;
