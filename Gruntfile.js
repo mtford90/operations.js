@@ -1,11 +1,49 @@
 module.exports = function (grunt) {
 
+
+    var browsers = [{
+        browserName: "firefox",
+        version: "19",
+        platform: "XP"
+    }, {
+        browserName: "googlechrome",
+        platform: "XP"
+    }, {
+        browserName: "googlechrome",
+        platform: "linux"
+    }, {
+        browserName: "internet explorer",
+        platform: "WIN8",
+        version: "10"
+    }];
+
     require('load-grunt-tasks')(grunt);
     require('time-grunt')(grunt);
 
     var userConfig = require('./build.config.js');
 
     var taskConfig = {
+
+        connect: {
+            server: {
+                options: {
+                    base: "",
+                    port: 9999
+                }
+            }
+        },
+
+        'saucelabs-mocha': {
+            all: {
+                options: {
+                    urls: ["http://127.0.0.1:9999/test-mocha/test/browser/opts.html"],
+                    tunnelTimeout: 5,
+                    concurrency: 3,
+                    browsers: browsers,
+                    testname: "mocha tests"
+                }
+            }
+        },
 
         pkg: grunt.file.readJSON("package.json"),
 
@@ -111,6 +149,8 @@ module.exports = function (grunt) {
             }
         }
 
+
+
     };
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
@@ -163,6 +203,10 @@ module.exports = function (grunt) {
         });
 
     });
+
+    grunt.registerTask("dev", ["connect", "watch"]);
+
+    grunt.registerTask("testSauce", ["connect", "saucelabs-mocha"]);
 
 
 };

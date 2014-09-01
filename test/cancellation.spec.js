@@ -1,13 +1,16 @@
 /*global describe,it,beforeEach */
 var Operation, _;
 
+var assert;
 
-if (!assert) { // node.js tests
-    var assert = require('chai').assert;
-    Operation = require('../src/operation').Operation;
-    _ = require('underscore');
+if (typeof require == 'undefined') { // Browser based
+    Operation = op.Operation;
+    assert = chai.assert;
 }
-
+else { // NodeJS
+    assert = require('chai').assert;
+    Operation = require('../src/operation').Operation;
+}
 
 describe('Cancellation', function () {
     var op;

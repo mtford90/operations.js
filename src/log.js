@@ -4,13 +4,14 @@ var _ = require('underscore');
 function Logger (name) {
     if (!this) return new Logger(name);
     this.name = name;
-    this.trace = constructPerformer(this, _.bind(console.debug, console), Logger.Level.trace);
-    this.debug = constructPerformer(this, _.bind(console.debug, console), Logger.Level.debug);
-    this.info = constructPerformer(this, _.bind(console.info, console), Logger.Level.info);
-    this.log = constructPerformer(this, _.bind(console.log, console), Logger.Level.info);
-    this.warn = constructPerformer(this, _.bind(console.warn, console), Logger.Level.warning);
-    this.error = constructPerformer(this, _.bind(console.error, console), Logger.Level.error);
-    this.fatal = constructPerformer(this, _.bind(console.error, console), Logger.Level.fatal);
+
+    this.trace = constructPerformer(this, _.bind(console.debug ? console.debug : console.log, console), Logger.Level.trace);
+    this.debug = constructPerformer(this, _.bind(console.debug ? console.debug  : console.log, console), Logger.Level.debug);
+    this.info = constructPerformer(this, _.bind(console.info ? console.info : console.log, console), Logger.Level.info);
+    this.log = constructPerformer(this, _.bind(console.log ? console.log : console.log, console), Logger.Level.info);
+    this.warn = constructPerformer(this, _.bind(console.warn ? console.warn : console.log, console), Logger.Level.warning);
+    this.error = constructPerformer(this, _.bind(console.error ? console.error : console.log, console), Logger.Level.error);
+    this.fatal = constructPerformer(this, _.bind(console.error ? console.error : console.log, console), Logger.Level.fatal);
 
 }
 
