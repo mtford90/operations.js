@@ -4,10 +4,24 @@ var log = require('./log');
 var Logger = log.loggerWithName('OperationQueue');
 
 
-function OperationQueue(maxConcurrentOperations) {
+function OperationQueue() {
+
+    if (!this) {
+        return new (Function.prototype.bind.apply(OperationQueue, arguments));
+    }
     var self = this;
+
+    if (arguments.length) {
+        if (typeof(arguments[0]) == 'number') {
+            this.maxConcurrentOperations = arguments[0];
+        }
+        else {
+            this.name = arguments[0];
+            this.maxConcurrentOperations = arguments[1];
+        }
+    }
+
     this._queuedOperations = [];
-    this.maxConcurrentOperations = maxConcurrentOperations;
     this._runningOperations = [];
     this._running = false;
     this._onStart = [];

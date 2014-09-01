@@ -16,7 +16,7 @@ describe('OperationQueue', function () {
     var q;
 
     beforeEach(function () {
-        q = new OperationQueue(2);
+        q = new OperationQueue('myQueue', 2);
     });
 
     describe('initial state', function () {

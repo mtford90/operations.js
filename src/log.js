@@ -71,7 +71,6 @@ Logger.prototype.setLevel = function (level) {
 
 Logger.prototype.override = function (level, override, message) {
     var levelAsText = Logger.levelAsText(level);
-    console.error(level, levelAsText);
     var performer = this[levelAsText.trim().toLowerCase()];
     var f = performer.f;
     var otherArguments = Array.prototype.slice.call(arguments, 3, arguments.length);

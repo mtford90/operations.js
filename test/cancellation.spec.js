@@ -40,9 +40,6 @@ describe('Cancellation', function () {
                 assert.notOk(op.completed, 'should not complete straight away');
             }, 50);
         });
-
-
-
     });
 
     describe('composite', function () {
