@@ -11,6 +11,8 @@ function OperationQueue (maxConcurrentOperations) {
     this._runningOperations = [];
     this._running = false;
     this.observers = [];
+    this.logLevel = null;
+
     Object.defineProperty(this, 'numRunningOperations', {
         get: function () {
             return self._runningOperations.length;
@@ -41,6 +43,19 @@ function OperationQueue (maxConcurrentOperations) {
         configurable: true,
         enumerable: true
     });
+
+    Object.defineProperty(this, 'loggingOveridden', {
+        get: function () {
+            if (self.logLevel) {
+                return self.logLevel <= log.Level.info;
+            }
+            return false;
+        },
+        enumerable: true,
+        configurable: true
+    })
+
+
 }
 
 OperationQueue.prototype._nextOperations = function () {
@@ -96,36 +111,47 @@ OperationQueue.prototype._runOperation = function (op) {
 };
 
 OperationQueue.prototype._logStatus = function () {
-    if (Logger.info.isEnabled) {
+    var logFunc = this._getLogFunc();
+    if (Logger.info.isEnabled || this.loggingOveridden) {
         var numRunning = this.numRunningOperations;
         var numQueued = this._queuedOperations.length;
         var name = this.name || "Unnamed Queue";
         if (numRunning && numQueued) {
-            Logger.info('"' + name +'" now has ' + numRunning.toString() + ' operations running and ' + numQueued.toString() + ' operations queued');
+            logFunc('"' + name +'" now has ' + numRunning.toString() + ' operations running and ' + numQueued.toString() + ' operations queued');
         }
         else if (numRunning) {
-            Logger.info('"' + name +'" now has ' + numRunning.toString() + ' operations running');
+            logFunc('"' + name +'" now has ' + numRunning.toString() + ' operations running');
         }
         else if (numQueued) {
-            Logger.info('"' + name +'" now has ' + numQueued.toString() + ' operations queued');
+            logFunc('"' + name +'" now has ' + numQueued.toString() + ' operations queued');
         }
         else {
-            Logger.info('"' + name +'" has no operations running or queued');
+            logFunc('"' + name +'" has no operations running or queued');
         }
     }
 };
 
 OperationQueue.prototype._logStart = function () {
-    if (Logger.info.isEnabled) {
+    var logFunc = this._getLogFunc();
+    if (Logger.info.isEnabled || this.loggingOveridden) {
         var name = this.name || "Unnamed Queue";
-        Logger.info('"' + name +'" is now running');
+        logFunc('"' + name +'" is now running');
     }
 };
 
+OperationQueue.prototype._getLogFunc = function () {
+    if (this.logLevel) {
+        return _.bind(Logger.override, Logger, log.Level.info, this.logLevel);
+    }
+    return Logger.info;
+};
+
+
 OperationQueue.prototype._logStop = function () {
-    if (Logger.info.isEnabled) {
+    var logFunc = this._getLogFunc();
+    if (Logger.info.isEnabled || this.loggingOveridden) {
         var name = this.name || "Unnamed Queue";
-        Logger.info('"' + name +'" is no longer running');
+        logFunc('"' + name +'" is no longer running');
     }
 };
 

@@ -236,8 +236,8 @@ We can enable logging at multiple levels enabling us to monitor things such as n
 #### Operation
 
 ```javascript
-Operation.setLogLevel(Log.Levels.Info); // Global log level for operations.
-op1.setLogLevel(Log.Levels.Info); // Override on a per operation basis.
+Operation.logLevel = Log.Levels.Info; // Global log level for operations.
+op1.logLevel = Log.Levels.Info; // Override on a per operation basis.
 ```
 
 Example logs:
@@ -252,8 +252,8 @@ INFO [Operation]: "My other operation" failed due to failure/cancellation of dep
 #### Queue
 
 ```javascript
-OperationQueue.setLogLevel(Log.Levels.Info); // Global log level for queues.
-queue.setLogLevel(Log.Levels.Info); // Override on a per queue basis.
+OperationQueue.logLevel = Log.Levels.info; // Global log level for queues.
+queue.logLevel = Log.Levels.Info; // Override on a per queue basis.
 ```
 
 Example logs:
@@ -262,17 +262,6 @@ Example logs:
 INFO [OperationQueue]: "My queue" now has 1 running operation.
 INFO [OperationQueue]: "My queue" now has 2 running operations.
 INFO [OperationQueue]: "My queue" now has 2 running operations and 1 queued operation.
-```
-
-#### Globally
-
-```javascript
-Log.setLogLevel(Log.Levels.Info);
-```
-Example logs:
-```
-INFO [operations.js]: There are 2 running operations.
-INFO [operations.js]: There are now 3 running operations and 1 queued operation across 2 queues. 3 operations are running external to a queue.
 ```
 
 ### Testing

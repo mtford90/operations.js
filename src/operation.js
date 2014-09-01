@@ -28,6 +28,7 @@ function Operation() {
     this.dependencies = [];
     this._mustSucceed = [];
     this.observers = [];
+    this.logLevel = null; // Override.
 
     Object.defineProperty(this, 'failed', {
         get: function () {
@@ -120,7 +121,20 @@ function Operation() {
         },
         enumerable: true,
         configurable: true
+    });
+
+    Object.defineProperty(this, 'loggingOveridden', {
+        get: function () {
+            if (self.logLevel) {
+                return self.logLevel <= log.Level.info;
+            }
+            return false;
+        },
+        enumerable: true,
+        configurable: true
     })
+
+
 
 }
 
@@ -158,11 +172,12 @@ Operation.prototype._startComposite = function () {
 };
 
 Operation.prototype._logCompletion = function () {
-    if (Logger.info.isEnabled) {
+    var logFunc = this._getLogFunc();
+    if (Logger.info.isEnabled || this.loggingOveridden) {
         var name = this.name || 'Unnamed';
         var failedDependencies = this.failedDueToDependency;
         if (failedDependencies) {
-            Logger.info('"' + name + '" failed due to failure/cancellation of dependencies: ' + _.pluck(failedDependencies, 'name').join(', '));
+            logFunc('"' + name + '" failed due to failure/cancellation of dependencies: ' + _.pluck(failedDependencies, 'name').join(', '));
         }
         else if (this.failed) {
             var err = this.error;
@@ -173,18 +188,26 @@ Operation.prototype._logCompletion = function () {
             else {
                 err = [this.error];
             }
-            Logger.info('"' + name + '" failed due to errors:', err);
+            logFunc('"' + name + '" failed due to errors:', err);
         }
         else {
-            Logger.info('"' + name + '" has succeeded.');
+            logFunc('"' + name + '" has succeeded.');
         }
     }
 };
 
+Operation.prototype._getLogFunc = function () {
+    if (this.logLevel) {
+        return _.bind(Logger.override, Logger, log.Level.info, this.logLevel);
+    }
+    return Logger.info;
+};
+
 Operation.prototype._logStart = function () {
-    if (Logger.info.isEnabled) {
+    if (Logger.info.isEnabled || this.loggingOveridden) {
         var name = this.name || 'Unnamed';
-        Logger.info('"' + name + '" has started.');
+        var logFunc = this._getLogFunc();
+        logFunc('"' + name + '" has started.');
     }
 };
 

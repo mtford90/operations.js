@@ -21,5 +21,20 @@ describe('Logger', function () {
         assert.ok(myOtherLogger.info.isEnabled);
         logger.setLevel(Logger.Level.warning);
         assert.notOk(logger.info.isEnabled);
-    })
+    });
+
+    it('override operation', function (done) {
+        var op = new Operation();
+        op.logLevel = Logger.Level.error;
+        op.completion = function () {
+            done();
+        };
+        op.start();
+    });
+
+    it('override queue', function () {
+        var q = new OperationQueue();
+        q.logLevel = Logger.Level.error;
+        q.start();
+    });
 });

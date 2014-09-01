@@ -11,6 +11,7 @@ function Logger (name) {
     this.warn = constructPerformer(this, console.warn, Logger.Level.warning);
     this.error = constructPerformer(this, console.error, Logger.Level.error);
     this.fatal = constructPerformer(this, console.error, Logger.Level.fatal);
+
 }
 
 var logLevels = {};
@@ -28,6 +29,9 @@ function constructPerformer (logger, f, level) {
         enumerable: true,
         configurable: true
     });
+    performer.f = f;
+    performer.logger = logger;
+    performer.level = level;
     return performer;
 }
 
@@ -65,10 +69,20 @@ Logger.prototype.setLevel = function (level) {
     logLevels[this.name] = level;
 };
 
-Logger.prototype.performLog = function (logFunc, level, message, otherArguments) {
-    var currentLevel = this.currentLevel();
+Logger.prototype.override = function (level, override, message) {
+    var levelAsText = Logger.levelAsText(level);
+    console.error(level, levelAsText);
+    var performer = this[levelAsText.trim().toLowerCase()];
+    var f = performer.f;
+    var otherArguments = Array.prototype.slice.call(arguments, 3, arguments.length);
+    this.performLog(f, level, message, otherArguments, override);
+};
+
+Logger.prototype.performLog = function (logFunc, level, message, otherArguments, override) {
+    var self = this;
+    var currentLevel = override !== undefined ? override : this.currentLevel();
     if (currentLevel <= level) {
-        logFunc = _.partial(logFunc, Logger.levelAsText(level) + ' [' + this.name + ']: ' + message);
+        logFunc = _.partial(logFunc, Logger.levelAsText(level) + ' [' + self.name + ']: ' + message);
         var args = [];
         for (var i=0; i<otherArguments.length; i++) {
             args[i] = otherArguments[i];
