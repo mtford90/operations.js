@@ -181,4 +181,16 @@ OperationQueue.prototype.onStop = function (o) {
     this._onStop.push(o);
 };
 
+Object.defineProperty(OperationQueue, 'logLevel', {
+    get: function () {
+        return Logger.currentLevel();
+    },
+    set: function (v) {
+        Logger.setLevel(v);
+    },
+    configurable: true,
+    enumerable: true
+});
+
+
 module.exports.OperationQueue = OperationQueue;

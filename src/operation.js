@@ -295,7 +295,6 @@ Operation.prototype.addDependency = function () {
             })
         }
     }
-
 };
 
 Operation.prototype.onCompletion = function (o) {
@@ -316,5 +315,16 @@ Operation.prototype.cancel = function (callback) {
         });
     }
 };
+
+Object.defineProperty(Operation, 'logLevel', {
+    get: function () {
+        return Logger.currentLevel();
+    },
+    set: function (v) {
+        Logger.setLevel(v);
+    },
+    configurable: true,
+    enumerable: true
+});
 
 module.exports.Operation = Operation;
