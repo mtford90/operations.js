@@ -1,9 +1,10 @@
 /*global describe,it,beforeEach */
-var Operation, OperationQueue;
+var Operation, OperationQueue, _;
 if (!assert) { // node.js tests
     var assert = require('chai').assert;
     Operation = require('../src/operation').Operation;
     OperationQueue = require('../src/queue').OperationQueue;
+    _ = require('underscore');
 }
 else { // Browser tests
     Operation = op.Operation;
@@ -112,18 +113,82 @@ describe('OperationQueue', function () {
             assert.notInclude(q.observers, observer);
         });
 
-        it('observes', function (done) {
-            var observer = function (numRunningOperations, numQueuedOperations) {
+        it('observes on queue start', function (done) {
+            var observer = function (changes) {
+                assert.equal(this, q);
+                assert.equal(changes.length, 1);
+                var change = changes[0];
+                assert.equal(change.property, 'running');
+                assert.equal(change.old, false);
+                assert.equal(change.new, true);
                 done();
             };
             q.addObserver(observer);
             q.start();
         });
 
+        it('observes on queue stop', function (done) {
+            var observer = function (changes) {
+                assert.equal(this, q);
+                assert.equal(changes.length, 1);
+                var change = changes[0];
+                assert.equal(change.property, 'running');
+                assert.equal(change.old, true);
+                assert.equal(change.new, false);
+                done();
+            };
+            q.start();
+            q.addObserver(observer);
+            q.stop();
+        });
+
+        it('observes on enqueued', function (done) {
+            var observer = function (changes) {
+                assert.equal(this, q);
+                assert.equal(changes.length, 1);
+                var change = changes[0];
+                assert.equal(change.property, 'numQueuedOperations');
+                assert.equal(change.old, 0);
+                assert.equal(change.new, 1);
+                done();
+            };
+            q.addObserver(observer);
+            q.addOperation(new Operation());
+        });
+
+
+        it('observes on running and when finished', function (done) {
+            var changes = [];
+            var observer = function (_changes) {
+                assert.equal(this, q);
+                _.each(_changes, function (c) {changes.push(c)});
+                if (changes.length == 2) {
+                    var firstChange = changes[0];
+                    assert.equal(firstChange.property, 'numRunningOperations');
+                    assert.equal(firstChange.old, 0);
+                    assert.equal(firstChange.new, 1);
+                    var secondChange = changes[1];
+                    assert.equal(secondChange.property, 'numRunningOperations');
+                    assert.equal(secondChange.old, 1);
+                    assert.equal(secondChange.new, 0);
+                    done();
+                }
+            };
+            q.start();
+            q.addObserver(observer);
+            q.addOperation(new Operation(function (done) {
+                setTimeout(function () {
+                    done();
+                },10);
+            }));
+        });
+
+
+
     });
 
     describe('completion', function () {
-        beforeEach(function () {
+        beforeEach(function (done) {
             var op = new Operation('op1', function (finished) {
                 setTimeout(function () {
                     finished();
@@ -131,6 +196,12 @@ describe('OperationQueue', function () {
             });
             q.start();
             q.addOperation(op);
+            q.addObserver(function (changes) {
+                var change = changes[0];
+                if (change.property == 'numRunningOperations') {
+                    if (change.new == 0) done();
+                }
+            })
         });
 
         it('should remove from running when completed', function () {

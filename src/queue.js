@@ -20,10 +20,14 @@ function OperationQueue (maxConcurrentOperations) {
             return self._running;
         },
         set: function (v) {
+            var oldValue = self._running;
             var wasRunning = self._running;
             self._running = v;
             if (!wasRunning && self._running) {
                 self._nextOperations();
+            }
+            if (oldValue != this.running) {
+                self._notify(self._notificationDict('running', oldValue, self.running));
             }
         },
         configurable: true,
@@ -35,20 +39,52 @@ function OperationQueue (maxConcurrentOperations) {
 OperationQueue.prototype._nextOperations = function () {
     var self = this;
     while((self._runningOperations.length < self.maxConcurrentOperations) && self._queuedOperations.length) {
-        var op = self._queuedOperations.pop();
+        var op = self._queuedOperations[0];
         self._runOperation(op);
     }
 };
 
+OperationQueue.prototype._notificationDict = function (prop, oldValue, newValue) {
+    return {property: prop, old: oldValue, new: newValue};
+};
+
+OperationQueue.prototype._notify = function (changes) {
+    var self = this;
+    if (Object.prototype.toString.call(changes) !== '[object Array]') {
+        changes = [changes];
+    }
+    _.each(this.observers, function (o) {
+        _.bind(o, self)(changes);
+    });
+};
+
 OperationQueue.prototype._runOperation = function (op) {
     var self = this;
+    var wasEnqueued = false;
+    var previousQueuedOperations = this._queuedOperations.length;
+    for (var i=0;i<this._queuedOperations.length;i++) {
+        if (this._queuedOperations[i] == op) {
+            this._queuedOperations.splice(i, 1);
+            wasEnqueued = true;
+            break;
+        }
+    }
+    var previousNumRunningOperations = this.numRunningOperations;
     this._runningOperations.push(op);
     op.addObserver(function () {
         var idx = self._runningOperations.indexOf(op);
+        var previousNumRunningOperations = self.numRunningOperations;
         self._runningOperations.splice(idx, 1);
+        var notification = self._notificationDict('numRunningOperations', previousNumRunningOperations, self.numRunningOperations);
+        self._notify(notification);
         self._nextOperations();
     });
     op.start();
+    var notifications = [this._notificationDict('numRunningOperations', previousNumRunningOperations, this.numRunningOperations)];
+    if (wasEnqueued) {
+        notifications.push(this._notificationDict('numQueuedOperations', previousQueuedOperations, this._queuedOperations.length));
+    }
+    this._notify(notifications);
 };
 
 OperationQueue.prototype._addOperation = function (op) {
@@ -56,7 +92,9 @@ OperationQueue.prototype._addOperation = function (op) {
         this._runOperation(op);
     }
     else {
+        var previousQueuedOperations = this._queuedOperations.length;
         this._queuedOperations.push(op);
+        this._notify(this._notificationDict('numQueuedOperations', previousQueuedOperations, this._queuedOperations.length));
     }
 };
 
@@ -85,7 +123,7 @@ OperationQueue.prototype.start = function () {
     this.running = true;
 };
 
-OperationQueue.prototype.pause = function () {
+OperationQueue.prototype.stop = function () {
     this.running = false;
 };
 

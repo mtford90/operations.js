@@ -22,7 +22,6 @@ function Operation() {
     this.completed = false;
     this.result = null;
     this.running = false;
-    this.purpose = '';
     this.dependencies = [];
     this._mustSucceed = [];
     this.observers = [];

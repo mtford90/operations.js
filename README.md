@@ -73,17 +73,34 @@ Composite operations can also be constructed using functions:
 ```javascript
 var op1 = function (done) {
     // Do something.
+    console.log(this); // Reference to automatically generated Operation object.
     done('error');
 };
 
 var op2 = function (done) {
     // Do something else.
+    console.log(this); // Reference to automatically generated Operation object.
     done(null, 'result of something else');
 };
 
 var compositeOperation = new Operation([op1, op2]);
 ```
+### Cancellation
 
+Operations can be cancelled by calling `cancel`. You must handle this within the function that defines your operation, otherwise the operation will just run to completion.
+
+```javascript
+var op1 = new Operation(function (done) {
+	while(!this.cancelled) {
+		// ... do some stuff.
+		if (finished) done();
+	}
+});
+
+op.cancel(function () {
+	// Called on cancel if operation handled cancellation, otherwise called on completion.
+});
+```
 
 ### Dependencies
 
@@ -141,13 +158,44 @@ queue.start();
 anotherQueue.start();
 ```
 
-We can be notified of the number of operations running on the queue using an observer:
+### Observing
+
+Changes in properties on the observation object can be observed:
 
 ```javascript
-queue.addObserver(function(numRunningOperations, numQueuedOperations) {
-	// ...
+operation.addObserver(function (changes) {
+	_.each(changes, function(change) {
+		if (change.property == 'failed') {
+			if (change.new) // Operation has just failed.
+		}
+		else if (change.property == 'completed') {
+			if (change.new) // Operation has just completed.
+		}
+		else if (change.property == 'running') {
+			if (change.new) // Operation has just started.
+		}
+	});
 });
 ```
+
+As well as on the queues:
+
+```javascript
+queue.addObserver(function(changes) {
+	_.each(changes, function (change) {
+		if (change.property == 'running') {
+			// Queue has started or stopped.
+		}
+		else if (change.property == 'numRunningOperations') {
+			// Queue has started running an operation, or one has finished.
+		}
+		else if (change.property == 'numQueuedOperations') {
+			// Queue has upgraded an operation to running status.
+		}
+	});
+});
+```
+
 
 ### Logging
 
