@@ -22,13 +22,14 @@ function Operation() {
     this.completed = false;
     this.result = null;
     this.running = false;
+    this.cancelled = false;
     this.dependencies = [];
     this._mustSucceed = [];
     this.observers = [];
 
     Object.defineProperty(this, 'failed', {
         get: function () {
-            return !!self.error;
+            return  !!self.error || self.failedDueToDependency;
         },
         enumerable: true,
         configurable: true
@@ -68,7 +69,12 @@ function Operation() {
         get: function () {
             if (self.dependencies.length) {
                 return _.reduce(self.dependencies, function (memo, dep) {
-                    return memo && dep.completed && !dep.failed
+                    var mustSucceed = self._mustSucceed.indexOf(dep) > -1;
+                    var canRun = memo && dep.completed;
+                    if (mustSucceed && canRun) {
+                        canRun = canRun && !(dep.failed || dep.cancelled);
+                    }
+                    return canRun;
                 }, true);
             }
             return true;
@@ -80,9 +86,9 @@ function Operation() {
     Object.defineProperty(this, 'failedDueToDependency', {
         get: function () {
             if (self.dependencies.length) {
-                _.reduce(self.dependencies, function (memo, dep) {
+                return _.reduce(self.dependencies, function (memo, dep) {
                     var mustSucceed = self._mustSucceed.indexOf(dep) > -1;
-                    return memo || (dep.failed && mustSucceed)
+                    return memo || ((dep.failed || dep.cancelled) && mustSucceed)
                 }, false);
             }
             return false;
@@ -125,13 +131,14 @@ Operation.prototype._startComposite = function () {
 };
 
 Operation.prototype._complete = function () {
+    this.completed = true;
     if (this.completion) {
         _.bind(this.completion, this)();
     }
     _.each(this.observers, function (o) {o()});
 };
 
-Operation.prototype._start = function () {
+Operation.prototype.__start = function () {
     if (this.work) {
         if (this.composite) {
             this._startComposite();
@@ -143,7 +150,6 @@ Operation.prototype._start = function () {
     else {
         this.result = null;
         this.error = null;
-        this.completed = true;
         this.running = false;
         this._complete();
     }
@@ -154,13 +160,13 @@ Operation.prototype.start = function () {
     if (!this.running && !this.completed) {
         this.running = true;
         if (this.canRun) {
-            this._start();
+            this.__start();
         }
         else {
             _.each(this.dependencies, function (dep) {
                 dep.addObserver(function () {
                     if (self.canRun) {
-                        self._start();
+                        self.__start();
                     }
                 })
             });
@@ -202,6 +208,17 @@ Operation.prototype.removeObserver = function (o) {
     if (idx > -1) {
         this.observers.splice(idx, 1);
     }
+};
+
+Operation.prototype.cancel = function () {
+    this.cancelled = true;
+    this.running = false;
+    if (this.composite) {
+        _.each(this.work, function (subop) {
+            subop.cancel();
+        });
+    }
+    this._complete();
 };
 
 module.exports.Operation = Operation;

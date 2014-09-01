@@ -111,6 +111,10 @@ describe('Operation', function () {
 
         it('should not have failed', function () {
             assert.notOk(op.failed);
+        });
+
+        it('should not be cancelled', function () {
+            assert.notOk(op.cancelled);
         })
 
     });
@@ -149,6 +153,10 @@ describe('Operation', function () {
             it('should not have failed', function () {
                 assert.notOk(op.failed);
             })
+
+            it('should not be cancelled', function () {
+                assert.notOk(op.cancelled);
+            })
         });
 
         describe('error', function () {
@@ -182,6 +190,10 @@ describe('Operation', function () {
 
             it('should have failed', function () {
                 assert.ok(op.failed);
+            })
+
+            it('should not be cancelled', function () {
+                assert.notOk(op.cancelled);
             })
         });
 

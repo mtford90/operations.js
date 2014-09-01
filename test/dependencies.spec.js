@@ -72,7 +72,7 @@ describe('Dependencies', function () {
                 op1.addDependency(op2);
             });
 
-            it('op2 shouldnt be able to run', function () {
+            it('op1 shouldnt be able to run', function () {
                 assert.notOk(op1.canRun);
             });
 

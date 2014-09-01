@@ -196,6 +196,38 @@ queue.addObserver(function(changes) {
 });
 ```
 
+### Subclassing
+
+For really complex operations it's probably more appropriate to subclass `Operation` so that logic can be seperated out into multiple functions.
+
+```javascript
+function MyOperation(completion) {
+    if (!this) return new MyOperation(completion);
+    Operation.call(this, 'My Awesome Operation', this._start, completion);
+}
+
+MyOperation.prototype = Object.create(Operation.prototype);
+
+MyOperation.prototype._start = function (done) {
+	this.doSomething();
+	this.doSomethingElse();
+	done();
+};
+
+MyOperation.prototype.doSomething = function () {
+	// ...
+};
+
+MyOperation.prototype.doSomethingElse = function () {
+	// ...
+};
+
+var op = new MyOperation(function () {
+	// Completion.
+});
+
+op.start();
+```
 
 ### Logging
 
@@ -213,8 +245,8 @@ Example logs:
 ```
 INFO [Operation]: "My operation" has started. 
 INFO [Operation]: "My other operation" has started. 
-INFO [Operation]: "My operation" failed due an error: "TypeError"
-INFO [Operation]: "My other operation" failed because "My operation" failed.
+INFO [Operation]: "My operation" was cancelled.
+INFO [Operation]: "My other operation" failed because "My operation" was cancelled.
 ```
 
 #### Queue
