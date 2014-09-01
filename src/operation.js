@@ -1,4 +1,6 @@
 var _ = require('underscore');
+var log = require('./log');
+var Logger = log.loggerWithName('Operation');
 
 function Operation() {
     if (!this) {
@@ -139,6 +141,8 @@ Operation.prototype._complete = function () {
 };
 
 Operation.prototype.__start = function () {
+    var name = this.name || 'Unnamed';
+    Logger.info('"' + name + '" has started.');
     if (this.work) {
         if (this.composite) {
             this._startComposite();
