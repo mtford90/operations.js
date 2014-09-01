@@ -67,7 +67,7 @@ function Operation() {
         configurable: true
     });
 
-    Object.defineProperty(this, 'canRun',  {
+    Object.defineProperty(this, 'canRun', {
         get: function () {
             if (self.dependencies.length) {
                 return _.reduce(self.dependencies, function (memo, dep) {
@@ -88,10 +88,33 @@ function Operation() {
     Object.defineProperty(this, 'failedDueToDependency', {
         get: function () {
             if (self.dependencies.length) {
-                return _.reduce(self.dependencies, function (memo, dep) {
+                var failedDeps = _.reduce(self.dependencies, function (memo, dep) {
                     var mustSucceed = self._mustSucceed.indexOf(dep) > -1;
-                    return memo || ((dep.failed || dep.cancelled) && mustSucceed)
-                }, false);
+                    var failed = ((dep.failed || dep.cancelled) && mustSucceed);
+                    if (failed) {
+                        memo.push(dep);
+                    }
+                    return memo;
+                }, []);
+                return failedDeps.length ? failedDeps : false;
+            }
+            return false;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(this, 'failedDueToCancellationOfDependency', {
+        get: function () {
+            if (self.dependencies.length) {
+                var cancelled = _.reduce(self.dependencies, function (memo, dep) {
+                    var mustSucceed = self._mustSucceed.indexOf(dep) > -1;
+                    if (mustSucceed) {
+                        if (dep.cancelled) memo.push(dep);
+                    }
+                    return memo;
+                }, []);
+                return cancelled.length ? cancelled : false;
             }
             return false;
         },
@@ -132,17 +155,48 @@ Operation.prototype._startComposite = function () {
     });
 };
 
+Operation.prototype._logCompletion = function () {
+    if (Logger.info.isEnabled) {
+        var name = this.name || 'Unnamed';
+        var failedDependencies = this.failedDueToDependency;
+        if (failedDependencies) {
+            Logger.info('"' + name + '" failed due to failure/cancellation of dependencies: ' + _.pluck(failedDependencies, 'name').join(', '));
+        }
+        else if (this.failed) {
+            var err = this.error;
+            // Remove null errors.
+            if (Object.prototype.toString.call(err) === '[object Array]') {
+                err = _.filter(err, function (e) {return e });
+            }
+            else {
+                err = [this.error];
+            }
+            Logger.info('"' + name + '" failed due to errors:', err);
+        }
+        else {
+            Logger.info('"' + name + '" has succeeded.');
+        }
+    }
+};
+
+Operation.prototype._logStart = function () {
+    if (Logger.info.isEnabled) {
+        var name = this.name || 'Unnamed';
+        Logger.info('"' + name + '" has started.');
+    }
+};
+
 Operation.prototype._complete = function () {
     this.completed = true;
     if (this.completion) {
         _.bind(this.completion, this)();
     }
+    this._logCompletion();
     _.each(this.observers, function (o) {o()});
 };
 
 Operation.prototype.__start = function () {
-    var name = this.name || 'Unnamed';
-    Logger.info('"' + name + '" has started.');
+    this._logStart();
     if (this.work) {
         if (this.composite) {
             this._startComposite();
@@ -161,7 +215,13 @@ Operation.prototype.__start = function () {
 
 Operation.prototype.start = function () {
     var self = this;
-    if (!this.running && !this.completed) {
+    var neverStarted = !this.running && !this.completed;
+    var neverStartedAndFailed = neverStarted && this.failed;
+    // A dependency failed or was cancelled before this operation started.
+    if (neverStartedAndFailed) {
+        this._complete();
+    }
+    else if (neverStarted) {
         this.running = true;
         if (this.canRun) {
             this.__start();

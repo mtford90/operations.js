@@ -8,8 +8,6 @@ else { // Browser tests
     Operation = op.Operation;
 }
 
-
-
 describe('Operation', function () {
 
     var op;
@@ -77,8 +75,6 @@ describe('Operation', function () {
             });
         });
 
-
-
     });
 
     describe('running state', function () {
@@ -115,6 +111,10 @@ describe('Operation', function () {
 
         it('should not be cancelled', function () {
             assert.notOk(op.cancelled);
+        });
+
+        it('should not have failed due to cancellation of dependency', function () {
+            assert.notOk(op.failedDueToCancellationOfDependency);
         })
 
     });
@@ -152,7 +152,7 @@ describe('Operation', function () {
 
             it('should not have failed', function () {
                 assert.notOk(op.failed);
-            })
+            });
 
             it('should not be cancelled', function () {
                 assert.notOk(op.cancelled);
@@ -190,7 +190,7 @@ describe('Operation', function () {
 
             it('should have failed', function () {
                 assert.ok(op.failed);
-            })
+            });
 
             it('should not be cancelled', function () {
                 assert.notOk(op.cancelled);

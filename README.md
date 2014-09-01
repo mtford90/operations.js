@@ -246,7 +246,7 @@ Example logs:
 INFO [Operation]: "My operation" has started. 
 INFO [Operation]: "My other operation" has started. 
 INFO [Operation]: "My operation" was cancelled.
-INFO [Operation]: "My other operation" failed because "My operation" was cancelled.
+INFO [Operation]: "My other operation" failed due to failure/cancellation of dependencies: ["My operation"]
 ```
 
 #### Queue

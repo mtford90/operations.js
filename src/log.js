@@ -1,5 +1,34 @@
+
+
+
 function Logger (name) {
+    if (!this) return new Logger(name);
     this.name = name;
+    this.trace = constructPerformer(this, console.debug, Logger.Level.trace);
+    this.debug = constructPerformer(this, console.debug, Logger.Level.debug);
+    this.info = constructPerformer(this, console.info, Logger.Level.info);
+    this.log = constructPerformer(this, console.log, Logger.Level.info);
+    this.warn = constructPerformer(this, console.warn, Logger.Level.warning);
+    this.error = constructPerformer(this, console.error, Logger.Level.error);
+    this.fatal = constructPerformer(this, console.error, Logger.Level.fatal);
+}
+
+var logLevels = {};
+
+function constructPerformer (logger, f, level) {
+    var performer = function (message) {
+        logger.performLog(f, level, message, arguments);
+    };
+    Object.defineProperty(performer, 'isEnabled', {
+        get: function () {
+            var currentLevel = logger.currentLevel();
+            console.log(currentLevel, level);
+            return level >= currentLevel;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return performer;
 }
 
 Logger.Level = {
@@ -8,7 +37,8 @@ Logger.Level = {
     info: 2,
     warning: 3,
     warn: 3,
-    error: 4
+    error: 4,
+    fatal: 5
 };
 
 Logger.LevelText = {};
@@ -26,15 +56,17 @@ Logger.loggerWithName = function (name) {
     return new Logger(name);
 };
 
-Logger.logLevels = {};
+Logger.prototype.currentLevel = function () {
+    var logLevel = logLevels[this.name];
+    return  logLevel ? logLevel : Logger.Level.trace;
+};
 
-Logger.logLevel = function (name) {
-    var level = this.logLevels[name];
-    return level ? level : this.Level.trace;
+Logger.prototype.setLevel = function (level) {
+    logLevels[this.name] = level;
 };
 
 Logger.prototype.performLog = function (logFunc, level, message, otherArguments) {
-    var currentLevel = Logger.logLevel(this.name);
+    var currentLevel = this.currentLevel();
     if (currentLevel <= level) {
         logFunc = _.partial(logFunc, Logger.levelAsText(level) + ' [' + this.name + ']: ' + message);
         var args = [];
@@ -44,31 +76,6 @@ Logger.prototype.performLog = function (logFunc, level, message, otherArguments)
         args.splice(0, 1);
         logFunc.apply(logFunc, args);
     }
-};
-
-Logger.prototype.trace = function (message) {
-    this.performLog(console.debug, Logger.Level.trace, message, arguments);
-};
-Logger.prototype.debug = function (message) {
-    this.performLog(console.debug, Logger.Level.debug, message, arguments);
-};
-
-Logger.prototype.log = function (message) {
-    this.performLog(console.log, Logger.Level.info, message, arguments);
-};
-
-Logger.prototype.info = function (message) {
-    this.performLog(console.info, Logger.Level.info, message, arguments);
-};
-
-Logger.prototype.warn = function (message) {
-    this.performLog(console.warn, Logger.Level.warning, message, arguments);
-};
-
-Logger.prototype.warning = Logger.prototype.warn;
-
-Logger.prototype.error = function (message) {
-    this.performLog(console.error, Logger.Level.error, message, arguments);
 };
 
 module.exports = Logger;

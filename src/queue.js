@@ -1,5 +1,9 @@
 var _ = require('underscore');
 
+var log = require('./log');
+var Logger = log.loggerWithName('OperationQueue');
+
+
 function OperationQueue (maxConcurrentOperations) {
     var self = this;
     this._queuedOperations = [];
@@ -85,6 +89,10 @@ OperationQueue.prototype._runOperation = function (op) {
         notifications.push(this._notificationDict('numQueuedOperations', previousQueuedOperations, this._queuedOperations.length));
     }
     this._notify(notifications);
+};
+
+OperationQueue.prototype._logStatus = function () {
+
 };
 
 OperationQueue.prototype._addOperation = function (op) {
