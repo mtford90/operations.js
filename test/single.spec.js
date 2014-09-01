@@ -1,15 +1,15 @@
 /*global describe,it,beforeEach */
-var Operation;
+var Operation, assert, _;
 
-var assert;
-
-if (typeof require == 'undefined') { // Browser based
+if (typeof require == 'undefined') {
     Operation = op.Operation;
     assert = chai.assert;
+    _ = getUnderscore(); // Shim.
 }
 else { // NodeJS
     assert = require('chai').assert;
     Operation = require('../src/operation').Operation;
+    _ = require('underscore');
 }
 
 describe('Operation', function () {

@@ -1,21 +1,21 @@
 /*global describe,it,beforeEach */
-var Operation, OperationQueue;
-if (!assert) { // node.js tests
-    var assert = require('chai').assert;
+var Operation, OperationQueue, _;
+
+if (typeof require == 'undefined') {
+    Operation = op.Operation;
+    assert = chai.assert;
+    _ = getUnderscore(); // Shim.
+    OperationQueue = op.OperationQueue;
+}
+else { // NodeJS
+    assert = require('chai').assert;
     Operation = require('../src/operation').Operation;
     OperationQueue = require('../src/queue').OperationQueue;
-}
-else { // Browser tests
-    Operation = op.Operation;
-    OperationQueue = op.OperationQueue;
+    _ = require('underscore');
 }
 
 describe('Dependencies', function () {
-
-
     describe('add dependencies', function () {
-
-
         it('add a single dependency', function () {
             var op1, op2;
             op1 = new Operation('op1');

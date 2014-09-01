@@ -1,17 +1,21 @@
 /*global describe,it,beforeEach */
 var Operation, OperationQueue, Logger, _;
-if (!assert) { // node.js tests
-    var assert = require('chai').assert;
+
+if (typeof require == 'undefined') {
+    Operation = op.Operation;
+    assert = chai.assert;
+    _ = getUnderscore(); // Shim.
+    OperationQueue = op.OperationQueue;
+    Logger = op.Logger;
+}
+else { // NodeJS
+    assert = require('chai').assert;
     Operation = require('../src/operation').Operation;
     OperationQueue = require('../src/queue').OperationQueue;
-    Logger = require('../src/log');
     _ = require('underscore');
+    Logger = require('../src/log');
 }
-else { // Browser tests
-    Operation = op.Operation;
-    Logger = op.Logger;
-    OperationQueue = op.OperationQueue;
-}
+
 
 describe('Logger', function () {
     it('set level', function () {

@@ -1,12 +1,15 @@
 /*global describe,it,beforeEach */
-var Operation,_;
-if (!assert) { // node.js tests
-    var assert = require('chai').assert;
+var Operation, _, assert;
+
+if (typeof require == 'undefined') {
+    Operation = op.Operation;
+    assert = chai.assert;
+    _ = getUnderscore(); // Shim.
+}
+else { // NodeJS
+    assert = require('chai').assert;
     Operation = require('../src/operation').Operation;
     _ = require('underscore');
-}
-else { // Browser tests
-    Operation = op.Operation;
 }
 
 describe('subclassing', function () {

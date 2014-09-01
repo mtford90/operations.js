@@ -80,30 +80,16 @@ module.exports = function (grunt) {
             compile: '<%= compile_dir %>'
         },
 
-        karmaconfig: {
-            unit: {
-                dir: '<%= build_dir %>',
-                src: [
-                    '<%= vendor_files.js %>',
-                    '<%= test_files.js %>'
-                ]
-            }
-        },
-
         delta: {
+            options: {
+                livereload: true
+            },
             node: {
                 files: [
                     '<%= app_files.js %>',
                     '<%= app_files.jsunit %>'
                 ],
                 tasks: ['mochaTest']
-            },
-            browser: {
-                files: [
-                    '<%= app_files.js %>',
-                    '<%= app_files.jsunit %>'
-                ],
-                tasks: [ 'build', 'karma:unit:run' ]
             }
         },
 
@@ -111,12 +97,6 @@ module.exports = function (grunt) {
             build: {
                 files: {
                     '<%= build_dir %>/operation.js': ['src/index.js']
-                }
-            },
-            // Bundle underscore for karma
-            karma: {
-                files: {
-                    '<%= build_dir %>/operation-karma.js': ['src/index.js']
                 }
             }
         },
@@ -156,14 +136,7 @@ module.exports = function (grunt) {
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
     grunt.renameTask('watch', 'delta');
-    grunt.registerTask('watch', [ 'mochaTest:test', 'delta:node' ]);
-
-    grunt.registerTask('default', [ 'mochaTest:test', 'compile' ]);
-
-    grunt.registerTask('build-test', [
-        'karmaconfig',
-        'browserify:karma'
-    ]);
+    grunt.registerTask('watch', [ 'connect', 'mochaTest:test', 'delta' ]);
 
     grunt.registerTask('test', [
         'mochaTest:test'
@@ -175,13 +148,6 @@ module.exports = function (grunt) {
         'uglify',
         'copy:dist'
     ]);
-
-    grunt.registerTask('testBrowser', [
-        'build-test',
-        'karma:single'
-    ]);
-
-    grunt.registerTask('watchBrowser', ['build-test', 'karma:single', 'karma:continuous', 'delta:browser']);
 
     function filterForJS(files) {
         return files.filter(function (file) {
@@ -203,8 +169,6 @@ module.exports = function (grunt) {
         });
 
     });
-
-    grunt.registerTask("dev", ["connect", "watch"]);
 
     grunt.registerTask("testSauce", ["connect", "saucelabs-mocha"]);
 

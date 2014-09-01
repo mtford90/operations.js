@@ -1,11 +1,15 @@
 /*global describe,it,beforeEach */
-var Operation;
-if (!assert) { // node.js tests
-    var assert = require('chai').assert;
-    Operation = require('../src/operation').Operation;
-}
-else { // Browser tests
+var Operation, assert, _;
+
+if (typeof require == 'undefined') {
     Operation = op.Operation;
+    assert = chai.assert;
+    _ = getUnderscore(); // Shim.
+}
+else { // NodeJS
+    assert = require('chai').assert;
+    Operation = require('../src/operation').Operation;
+    _ = require('underscore');
 }
 
 describe('Composite Operations', function () {

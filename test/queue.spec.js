@@ -1,15 +1,21 @@
 /*global describe,it,beforeEach */
-var Operation, OperationQueue, _;
-if (!assert) { // node.js tests
-    var assert = require('chai').assert;
+
+
+var Operation, OperationQueue,  _;
+
+if (typeof require == 'undefined') {
+    Operation = op.Operation;
+    assert = chai.assert;
+    _ = getUnderscore(); // Shim.
+    OperationQueue = op.OperationQueue;
+}
+else { // NodeJS
+    assert = require('chai').assert;
     Operation = require('../src/operation').Operation;
     OperationQueue = require('../src/queue').OperationQueue;
     _ = require('underscore');
 }
-else { // Browser tests
-    Operation = op.Operation;
-    OperationQueue = op.OperationQueue;
-}
+
 
 describe('OperationQueue', function () {
 

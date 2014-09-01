@@ -9,12 +9,19 @@
   <script src="../node_modules/jquery/dist/jquery.js"></script>
   <script src="../node_modules/mocha/mocha.js"></script>
   <script src="../node_modules/chai/chai.js"></script>
+  <script src="../test/_.js"></script>
   <script src="../node_modules/underscore/underscore.js"></script>
   <script src="../build/operation.js"></script>
   <script>mocha.setup('bdd')</script>
   <script src="single.spec.js"></script>
+  <script src="cancellation.spec.js"></script>
+  <script src="dependencies.spec.js"></script>
+  <script src="log.spec.js"></script>
+  <script src="queue.spec.js"></script>
+  <script src="registration.spec.js"></script>
+  <script src="single.spec.js"></script>
+  <script src="subclassing.spec.js"></script>
   <script>
-    mocha.checkLeaks();
     mocha.globals(['jQuery']);
     mocha.run();
   </script>
