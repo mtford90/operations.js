@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <title>Test</title>
     <script src="bin/operations-0.1.0.js"></script>
+    <script>
+        var o = new op.Operation('myop', function (done) {done()});
+        o.completion = function () {
+            console.log('completed');
+        };
+        o.onCompletion(function () {
+            console.log('onCompletion');
+        });
+        o.start();
+    </script>
 </head>
 <body>
 
