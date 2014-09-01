@@ -29,6 +29,10 @@ function OperationQueue (maxConcurrentOperations) {
             self._running = v;
             if (!wasRunning && self._running) {
                 self._nextOperations();
+                self._logStart();
+            }
+            else if (wasRunning && !self._running) {
+                self._logStop();
             }
             if (oldValue != this.running) {
                 self._notify(self._notificationDict('running', oldValue, self.running));
@@ -60,6 +64,7 @@ OperationQueue.prototype._notify = function (changes) {
     _.each(this.observers, function (o) {
         _.bind(o, self)(changes);
     });
+    this._logStatus();
 };
 
 OperationQueue.prototype._runOperation = function (op) {
@@ -92,7 +97,37 @@ OperationQueue.prototype._runOperation = function (op) {
 };
 
 OperationQueue.prototype._logStatus = function () {
+    if (Logger.info.isEnabled) {
+        var numRunning = this.numRunningOperations;
+        var numQueued = this._queuedOperations.length;
+        var name = this.name || "Unnamed Queue";
+        if (numRunning && numQueued) {
+            Logger.info('"' + name +'" now has ' + numRunning.toString() + ' operations running and ' + numQueued.toString() + ' operations queued');
+        }
+        else if (numRunning) {
+            Logger.info('"' + name +'" now has ' + numRunning.toString() + ' operations running');
+        }
+        else if (numQueued) {
+            Logger.info('"' + name +'" now has ' + numQueued.toString() + ' operations queued');
+        }
+        else {
+            Logger.info('"' + name +'" has no operations running or queued');
+        }
+    }
+};
 
+OperationQueue.prototype._logStart = function () {
+    if (Logger.info.isEnabled) {
+        var name = this.name || "Unnamed Queue";
+        Logger.info('"' + name +'" is now running');
+    }
+};
+
+OperationQueue.prototype._logStop = function () {
+    if (Logger.info.isEnabled) {
+        var name = this.name || "Unnamed Queue";
+        Logger.info('"' + name +'" is no longer running');
+    }
 };
 
 OperationQueue.prototype._addOperation = function (op) {
