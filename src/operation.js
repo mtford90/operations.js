@@ -27,7 +27,7 @@ function Operation() {
     this.cancelled = false;
     this.dependencies = [];
     this._mustSucceed = [];
-    this.observers = [];
+    this._onCompletion = [];
     this.logLevel = null; // Override.
 
     Object.defineProperty(this, 'failed', {
@@ -135,7 +135,6 @@ function Operation() {
     })
 
 
-
 }
 
 Operation.running = [];
@@ -219,7 +218,9 @@ Operation.prototype._complete = function () {
         _.bind(this.completion, this)();
     }
     this._logCompletion();
-    _.each(this.observers, function (o) {o()});
+    _.each(this._onCompletion, function (o) {
+        o();
+    });
 };
 
 Operation.prototype.__start = function () {
@@ -256,7 +257,7 @@ Operation.prototype.start = function () {
         }
         else {
             _.each(this.dependencies, function (dep) {
-                dep.addObserver(function () {
+                dep.onCompletion(function () {
                     if (self.canRun) {
                         self.__start();
                     }
@@ -265,6 +266,7 @@ Operation.prototype.start = function () {
         }
     }
 };
+
 
 Operation.prototype.addDependency = function () {
     var self = this;
@@ -291,15 +293,8 @@ Operation.prototype.addDependency = function () {
 
 };
 
-Operation.prototype.addObserver = function (o) {
-    this.observers.push(o);
-};
-
-Operation.prototype.removeObserver = function (o) {
-    var idx = this.observers.indexOf(o);
-    if (idx > -1) {
-        this.observers.splice(idx, 1);
-    }
+Operation.prototype.onCompletion = function (o) {
+    this._onCompletion.push(o);
 };
 
 Operation.prototype.cancel = function () {

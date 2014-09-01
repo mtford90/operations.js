@@ -158,41 +158,26 @@ queue.start();
 anotherQueue.start();
 ```
 
-### Observing
+### Events
+
+#### Operations
 
 Changes in properties on the observation object can be observed:
 
 ```javascript
-operation.addObserver(function (changes) {
-	_.each(changes, function(change) {
-		if (change.property == 'failed') {
-			if (change.new) // Operation has just failed.
-		}
-		else if (change.property == 'completed') {
-			if (change.new) // Operation has just completed.
-		}
-		else if (change.property == 'running') {
-			if (change.new) // Operation has just started.
-		}
-	});
+operation.onCompletion(function () {
+	// Fired on completion.
 });
 ```
 
-As well as on the queues:
-
+#### Queues
 ```javascript
-queue.addObserver(function(changes) {
-	_.each(changes, function (change) {
-		if (change.property == 'running') {
-			// Queue has started or stopped.
-		}
-		else if (change.property == 'numRunningOperations') {
-			// Queue has started running an operation, or one has finished.
-		}
-		else if (change.property == 'numQueuedOperations') {
-			// Queue has upgraded an operation to running status.
-		}
-	});
+queue.onStart(function () {
+
+});
+
+queue.onStop(function () {
+
 });
 ```
 

@@ -10,7 +10,8 @@ function OperationQueue (maxConcurrentOperations) {
     this.maxConcurrentOperations = maxConcurrentOperations;
     this._runningOperations = [];
     this._running = false;
-    this.observers = [];
+    this._onStart = [];
+    this._onStop = [];
     this.logLevel = null;
 
     Object.defineProperty(this, 'numRunningOperations', {
@@ -37,7 +38,16 @@ function OperationQueue (maxConcurrentOperations) {
                 self._logStop();
             }
             if (oldValue != this.running) {
-                self._notify(self._notificationDict('running', oldValue, self.running));
+                if (this.running) {
+                    _.each(self._onStart, function (c) {
+                        _.bind(c, self)();
+                    })
+                }
+                else {
+                    _.each(self._onStop, function (c) {
+                        _.bind(c, self)();
+                    })
+                }
             }
         },
         configurable: true,
@@ -54,8 +64,6 @@ function OperationQueue (maxConcurrentOperations) {
         enumerable: true,
         configurable: true
     })
-
-
 }
 
 OperationQueue.prototype._nextOperations = function () {
@@ -66,48 +74,24 @@ OperationQueue.prototype._nextOperations = function () {
     }
 };
 
-OperationQueue.prototype._notificationDict = function (prop, oldValue, newValue) {
-    return {property: prop, old: oldValue, new: newValue};
-};
-
-OperationQueue.prototype._notify = function (changes) {
-    var self = this;
-    if (Object.prototype.toString.call(changes) !== '[object Array]') {
-        changes = [changes];
-    }
-    _.each(this.observers, function (o) {
-        _.bind(o, self)(changes);
-    });
-    this._logStatus();
-};
 
 OperationQueue.prototype._runOperation = function (op) {
     var self = this;
-    var wasEnqueued = false;
-    var previousQueuedOperations = this._queuedOperations.length;
     for (var i=0;i<this._queuedOperations.length;i++) {
         if (this._queuedOperations[i] == op) {
             this._queuedOperations.splice(i, 1);
-            wasEnqueued = true;
             break;
         }
     }
-    var previousNumRunningOperations = this.numRunningOperations;
     this._runningOperations.push(op);
-    op.addObserver(function () {
+    op.onCompletion(function () {
         var idx = self._runningOperations.indexOf(op);
-        var previousNumRunningOperations = self.numRunningOperations;
         self._runningOperations.splice(idx, 1);
-        var notification = self._notificationDict('numRunningOperations', previousNumRunningOperations, self.numRunningOperations);
-        self._notify(notification);
         self._nextOperations();
+        self._logStatus();
     });
     op.start();
-    var notifications = [this._notificationDict('numRunningOperations', previousNumRunningOperations, this.numRunningOperations)];
-    if (wasEnqueued) {
-        notifications.push(this._notificationDict('numQueuedOperations', previousQueuedOperations, this._queuedOperations.length));
-    }
-    this._notify(notifications);
+    this._logStatus();
 };
 
 OperationQueue.prototype._logStatus = function () {
@@ -160,10 +144,9 @@ OperationQueue.prototype._addOperation = function (op) {
         this._runOperation(op);
     }
     else {
-        var previousQueuedOperations = this._queuedOperations.length;
         this._queuedOperations.push(op);
-        this._notify(this._notificationDict('numQueuedOperations', previousQueuedOperations, this._queuedOperations.length));
     }
+    this._logStatus();
 };
 
 OperationQueue.prototype.addOperation = function (operationOrOperations) {
@@ -176,23 +159,19 @@ OperationQueue.prototype.addOperation = function (operationOrOperations) {
     }
 };
 
-OperationQueue.prototype.addObserver = function (o) {
-    this.observers.push(o);
-};
-
-OperationQueue.prototype.removeObserver = function (o) {
-    var idx = this.observers.indexOf(o);
-    if (idx > -1) {
-        this.observers.splice(idx, 1);
-    }
-};
-
 OperationQueue.prototype.start = function () {
     this.running = true;
 };
 
 OperationQueue.prototype.stop = function () {
     this.running = false;
+};
+
+OperationQueue.prototype.onStart = function (o) {
+    this._onStart.push(o);
+};
+OperationQueue.prototype.onStop = function (o) {
+    this._onStop.push(o);
 };
 
 module.exports.OperationQueue = OperationQueue;
