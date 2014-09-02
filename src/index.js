@@ -12,4 +12,8 @@ if (typeof window == 'object') {
         Logger: Logger
     };
 }
-
+else {
+    exports.Operation = Operation;
+    exports.OperationQueue = OperationQueue;
+    exports.Logger = Logger;
+}

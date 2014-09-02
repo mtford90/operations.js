@@ -33,6 +33,8 @@ Main features:
 	* [Logging](#logging)
 	* [Testing](#testing)
 * [Installation](#installation)
+	* [Browser](#browser)
+	* [NodeJS](#nodejs) 
 * [Contributing](#contributing)
 * [AngularJS bindings](#angularjs-bindings)
 
