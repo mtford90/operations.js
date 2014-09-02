@@ -12,3 +12,4 @@ if (typeof window == 'object') {
         Logger: Logger
     };
 }
+

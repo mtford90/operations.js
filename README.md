@@ -1,17 +1,20 @@
 operations.js
 =============
-A library for managing complex chains of asynchronous operations in Javascript. 
+[![Build Status](https://travis-ci.org/mtford90/operations.js.svg?branch=master)](https://travis-ci.org/mtford90/operations.js)
 
-Libraries such as async.js are awesome, but when attempting to define complex dependencies between your asynchronous callbacks things can quickly get out of hand. 
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/mtford.svg)](https://saucelabs.com/u/mtford)
 
-Inspired by the NSOperation and NSOperationQueue classes in Apple's Cocoa framework, this library is an attempt to solve this problem.
+
+A library for managing complex chains of asynchronous operations in Javascript for both the browser and node.js
+
+Libraries such as [async.js](https://github.com/caolan/async) are awesome, but when attempting to define complex dependencies between your asynchronous callbacks things can quickly get out of hand. 
+ 
+Inspired by the [NSOperation](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/Reference/Reference.html) and [NSOperationQueue](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperationQueue_class/Reference/Reference.html) classes in Apple's Cocoa framework, this library is an attempt to solve this problem.
 
 ## Usage
 
-### Simple
-
 Operations can be created as follows:
-```javascript
+```javascript  
 var operation = new Operation(function (done) {
 	setTimeout(function () {
 		done(null, 'result');
@@ -294,7 +297,7 @@ npm install operations --save
 ```
 
 And then use as normal:
-
+ 
 ```javascript
 var operations          = require('operations'),
 	Operation           = operations.Operation,
@@ -358,4 +361,4 @@ And then head over to https://saucelabs.com/account where you'll see the tests e
 
 ## AngularJS bindings
 
-An AngularJS version is available [here](https://github.com/mtford90/operations.angular.js).
+Coming soon to a repo near you: [https://github.com/mtford90/operations.angular.js](https://github.com/mtford90/operations.angular.js)
