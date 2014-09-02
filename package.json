@@ -1,10 +1,10 @@
 {
-  "name": "operations.js",
+  "name": "operations",
   "version": "0.1.0",
   "description": "A library for managing complex chains of asynchronous operations in Javascript.",
   "main": "index.js",
   "scripts": {
-    "test": "karma start karma/karma-unit-sauce.js"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
