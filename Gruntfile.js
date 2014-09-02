@@ -5,211 +5,205 @@ module.exports = function (grunt) {
 
     var browsers = [
 
-//        {
-//            browserName: "internet explorer",
-//            platform: "WIN8.1",
-//            'version': "11"
-//        },
-//        {
-//            browserName: "internet explorer",
-//            platform: "WIN8",
-//            'version': "10"
-//        },
-//        {
-//            "browserName": "firefox",
-//            "platform": "WIN8.1",
-//            "version": "31"
-//        },
-//        {
-//            "browserName": "googlechrome",
-//            "platform": "WIN8.1",
-//            "version": "37"
-//        },
-//        {
-//            "browserName": "googlechrome",
-//            "platform": "WIN8.1",
-//            "version": "30"
-//        },
-//        {
-//            browserName: "internet explorer",
-//            platform: "WIN7",
-//            'version': "11"
-//        },
-//        {
-//            browserName: "internet explorer",
-//            platform: "WIN7",
-//            'version': "10"
-//        },
-//        {
-//            "browserName": "firefox",
-//            "platform": "WIN7",
-//            "version": "31"
-//        },
-//        {
-//            "browserName": "googlechrome",
-//            "platform": "WIN7",
-//            "version": "37"
-//        },
-//        {
-//            "browserName": "googlechrome",
-//            "platform": "WIN7",
-//            "version": "30"
-//        },
-//                {
-//            "browserName": "safari",
-//            "platform": "WIN7",
-//            "version": "5"
-//        },
-//        {
-//            "browserName": "googlechrome",
-//            "platform": "OS X 10.9",
-//            "version": "35"
-//        },
-//        {
-//            "browserName": "firefox",
-//            "platform": "OS X 10.9",
-//            "version": "30"
-//        },
-//        {
-//            "browserName": "firefox",
-//            "platform": "linux",
-//            "version": "31"
-//        }
-//        ,
-//        {
-//            "browserName": "googlechrome",
-//            "platform": "linux",
-//            "version": "36"
-//        },
-//        {
-//            "browserName": "googlechrome",
-//            "platform": "OS X 10.8",
-//            "version": "35"
-//        },
-//        {
-//            "browserName": "safari",
-//            "platform": "OS X 10.8",
-//            "version": "6"
-//        },
-//        {
-//            "browserName": "iphone",
-//            "platform": "OS X 10.9",
-//            "version": "7.1",
-//            "deviceName": 'iPhone',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            "browserName": "iphone",
-//            "platform": "OS X 10.9",
-//            "version": "7.0",
-//            "deviceName": 'iPhone',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            "browserName": "iphone",
-//            "platform": "OS X 10.8",
-//            "version": "6.1",
-//            "deviceName": 'iPhone',
-//            'device-orientation': 'portrait'
-//        }
-//,
-//        {
-//            "browserName": "ipad",
-//            "platform": "OS X 10.9",
-//            "version": "7.1",
-//            "deviceName": 'iPad',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            "browserName": "ipad",
-//            "platform": "OS X 10.9",
-//            "version": "7.0",
-//            "deviceName": 'iPad',
-//            'device-orientation': 'portrait'
-//        }
-//,
-//        {
-//            "browserName": "ipad",
-//            "platform": "OS X 10.8",
-//            "version": "6.1",
-//            "deviceName": 'iPad',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.4',
-//            'deviceName': 'Android',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.4',
-//            'deviceName': 'Google Nexus 7 HD Emulator',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.4',
-//            'deviceName': 'LG Nexus 4 Emulator',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.3',
-//            'deviceName': 'Android',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.3',
-//            'deviceName': 'Samsung Galaxy S3 Emulator',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.2',
-//            'deviceName': 'Android',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.2',
-//            'deviceName': 'Samsung Galaxy Tab 3 Emulator',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.1',
-//            'deviceName': 'Android',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.1',
-//            'deviceName': 'HTC One X',
-//            'device-orientation': 'portrait'
-//        },
-//        {
-//            'browserName': 'android',
-//            'platform': 'Linux',
-//            'version': '4.0',
-//            'deviceName': 'Samsung Galaxy Note Emulator',
-//            'device-orientation': 'portrait'
-//        }
-
+        {
+            browserName: "internet explorer",
+            platform: "WIN8.1",
+            'version': "11"
+        },
+        {
+            browserName: "internet explorer",
+            platform: "WIN8",
+            'version': "10"
+        },
+        {
+            "browserName": "firefox",
+            "platform": "WIN8.1",
+            "version": "31"
+        },
+        {
+            "browserName": "googlechrome",
+            "platform": "WIN8.1",
+            "version": "37"
+        },
+        {
+            "browserName": "googlechrome",
+            "platform": "WIN8.1",
+            "version": "30"
+        },
         {
             browserName: "internet explorer",
             platform: "WIN7",
-            'version': "9"
+            'version': "11"
+        },
+        {
+            browserName: "internet explorer",
+            platform: "WIN7",
+            'version': "10"
+        },
+        {
+            "browserName": "firefox",
+            "platform": "WIN7",
+            "version": "31"
+        },
+        {
+            "browserName": "googlechrome",
+            "platform": "WIN7",
+            "version": "37"
+        },
+        {
+            "browserName": "googlechrome",
+            "platform": "WIN7",
+            "version": "30"
+        },
+                {
+            "browserName": "safari",
+            "platform": "WIN7",
+            "version": "5"
+        },
+        {
+            "browserName": "googlechrome",
+            "platform": "OS X 10.9",
+            "version": "35"
+        },
+        {
+            "browserName": "firefox",
+            "platform": "OS X 10.9",
+            "version": "30"
+        },
+        {
+            "browserName": "firefox",
+            "platform": "linux",
+            "version": "31"
+        }
+        ,
+        {
+            "browserName": "googlechrome",
+            "platform": "linux",
+            "version": "36"
+        },
+        {
+            "browserName": "googlechrome",
+            "platform": "OS X 10.8",
+            "version": "35"
+        },
+        {
+            "browserName": "safari",
+            "platform": "OS X 10.8",
+            "version": "6"
+        },
+        {
+            "browserName": "iphone",
+            "platform": "OS X 10.9",
+            "version": "7.1",
+            "deviceName": 'iPhone',
+            'device-orientation': 'portrait'
+        },
+        {
+            "browserName": "iphone",
+            "platform": "OS X 10.9",
+            "version": "7.0",
+            "deviceName": 'iPhone',
+            'device-orientation': 'portrait'
+        },
+        {
+            "browserName": "iphone",
+            "platform": "OS X 10.8",
+            "version": "6.1",
+            "deviceName": 'iPhone',
+            'device-orientation': 'portrait'
+        }
+,
+        {
+            "browserName": "ipad",
+            "platform": "OS X 10.9",
+            "version": "7.1",
+            "deviceName": 'iPad',
+            'device-orientation': 'portrait'
+        },
+        {
+            "browserName": "ipad",
+            "platform": "OS X 10.9",
+            "version": "7.0",
+            "deviceName": 'iPad',
+            'device-orientation': 'portrait'
+        }
+,
+        {
+            "browserName": "ipad",
+            "platform": "OS X 10.8",
+            "version": "6.1",
+            "deviceName": 'iPad',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.4',
+            'deviceName': 'Android',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.4',
+            'deviceName': 'Google Nexus 7 HD Emulator',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.4',
+            'deviceName': 'LG Nexus 4 Emulator',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.3',
+            'deviceName': 'Android',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.3',
+            'deviceName': 'Samsung Galaxy S3 Emulator',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.2',
+            'deviceName': 'Android',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.2',
+            'deviceName': 'Samsung Galaxy Tab 3 Emulator',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.1',
+            'deviceName': 'Android',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.1',
+            'deviceName': 'HTC One X',
+            'device-orientation': 'portrait'
+        },
+        {
+            'browserName': 'android',
+            'platform': 'Linux',
+            'version': '4.0',
+            'deviceName': 'Samsung Galaxy Note Emulator',
+            'device-orientation': 'portrait'
         }
 
 
