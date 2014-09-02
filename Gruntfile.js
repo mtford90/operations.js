@@ -256,7 +256,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    '<%= compile_dir %>/operations-<%= pkg.version %>.min.js': ['<%= build_dir %>/operation.js']
+                    '<%= compile_dir %>/operations.min.js': ['<%= build_dir %>/operation.js']
                 }
             }
         },
@@ -264,7 +264,7 @@ module.exports = function (grunt) {
         copy: {
             dist: {
                 files: [
-                    {src: '<%= build_dir %>/operation.js', dest: '<%= compile_dir %>/operations-<%= pkg.version %>.js'}
+                    {src: '<%= build_dir %>/operation.js', dest: '<%= compile_dir %>/operations.js'}
                 ]
             }
         },

@@ -1,6 +1,6 @@
 {
   "name": "operations",
-  "version": "0.1.0b",
+  "version": "0.1.1",
   "description": "A library for managing complex chains of asynchronous operations in Javascript.",
   "main": "src/index.js",
   "scripts": {
