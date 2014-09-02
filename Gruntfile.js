@@ -89,7 +89,7 @@ module.exports = function (grunt) {
                     '<%= app_files.js %>',
                     '<%= app_files.jsunit %>'
                 ],
-                tasks: ['mochaTest']
+                tasks: ['test']
             }
         },
 
@@ -127,7 +127,20 @@ module.exports = function (grunt) {
                 configFile: '<%= build_dir %>/karma-unit.js',
                 singleRun: true
             }
+        },
+
+
+        index: {
+
+            build: {
+                dir: '<%= test_dir %>',
+                src: [
+                    '<%= test_dir %>/**/*.spec.js'
+                ]
+            }
+
         }
+
 
 
 
@@ -136,9 +149,10 @@ module.exports = function (grunt) {
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
     grunt.renameTask('watch', 'delta');
-    grunt.registerTask('watch', [ 'connect', 'mochaTest:test', 'delta' ]);
+    grunt.registerTask('watch', [ 'index', 'connect', 'mochaTest:test', 'delta' ]);
 
     grunt.registerTask('test', [
+        'index',
         'mochaTest:test'
     ]);
 
@@ -155,22 +169,30 @@ module.exports = function (grunt) {
         });
     }
 
-    grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function () {
-        var jsFiles = filterForJS(this.filesSrc);
-        var process = function (contents, path) {
-            return grunt.template.process(contents, {
-                data: {
-                    scripts: jsFiles
-                }
-            });
-        };
-        grunt.file.copy('karma/karma-unit.tpl.js', grunt.config('build_dir') + '/karma-unit.js', {
-            process: process
-        });
 
-    });
 
     grunt.registerTask("testSauce", ["connect", "saucelabs-mocha"]);
+
+
+    grunt.registerMultiTask('index', 'Process index.html template', function () {
+        var dirRE = new RegExp('^(' + grunt.config('build_dir') + '|' + grunt.config('compile_dir') + ')\/', 'g');
+        var jsFiles = filterForJS(this.filesSrc).map(function (file) {
+            return '../' + file.replace(dirRE, '');
+        });
+
+        grunt.file.copy('test/index.tpl.html', this.data.dir + '/index.html', {
+            process: function (contents, path) {
+                return grunt.template.process(contents, {
+                    data: {
+                        specs: jsFiles
+                    }
+                });
+            }
+        });
+
+
+
+    });
 
 
 };

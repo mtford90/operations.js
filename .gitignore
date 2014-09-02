@@ -33,3 +33,6 @@ bower_components
 # Gruntfile.js
 build
 bin
+
+# Testing
+test/index.html

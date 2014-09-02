@@ -5,6 +5,7 @@ module.exports = {
 
     build_dir: 'build',
     compile_dir: 'bin',
+    test_dir: 'test',
 
     app_files: {
         js: [ 'src/**/*.js', '!src/**/*.spec.js'],
