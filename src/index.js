@@ -4,8 +4,9 @@ var Logger = require('./log');
 var _ = require('underscore');
 
 
-if (window) {
-    window.op = {
+if (typeof window == 'object') {
+    //noinspection JSValidateTypes
+    op = {
         Operation: Operation,
         OperationQueue: OperationQueue,
         Logger: Logger
