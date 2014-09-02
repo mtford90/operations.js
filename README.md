@@ -11,7 +11,34 @@ Libraries such as [async.js](https://github.com/caolan/async) are awesome, but w
  
 Inspired by the [NSOperation](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/Reference/Reference.html) and [NSOperationQueue](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperationQueue_class/Reference/Reference.html) classes in Apple's Cocoa framework, this library is an attempt to solve this problem.
 
+Main features:
+
+* Define asynchronous chunks of code as operations.
+* Define dependencies between these operations.
+* Cancellation of operations.
+* Composite operations.
+* Run these operations in queues with limits on concurrency.
+* Inter-queue dependencies between operations.
+
+## Contents
+
+* [Usage](#usage)
+	* [Single Operations](#single-operations) 
+	* [Composite](#composite)
+	* [Cancellation](#cancellation)
+	* [Dependencies](#dependencies)
+	* [Queues](#queues)
+	* [Events](#events)
+	* [Subclassing](#subclassing)
+	* [Logging](#logging)
+	* [Testing](#testing)
+* [Installation](#installation)
+* [Contributing](#contributing)
+* [AngularJS bindings](#angularjs-bindings)
+
 ## Usage
+
+### Single Operations
 
 Operations can be created as follows:
 ```javascript  
