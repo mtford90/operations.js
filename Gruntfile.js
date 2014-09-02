@@ -1,21 +1,32 @@
 module.exports = function (grunt) {
 
 
-    var browsers = [{
-        browserName: "firefox",
-        version: "19",
-        platform: "XP"
-    }, {
-        browserName: "googlechrome",
-        platform: "XP"
-    }, {
-        browserName: "googlechrome",
-        platform: "linux"
-    }, {
-        browserName: "internet explorer",
-        platform: "WIN8",
-        version: "10"
-    }];
+    var browsers = [
+//        {
+//            browserName: "firefox",
+//            version: "19",
+//            platform: "XP"
+//        },
+//        {
+//            browserName: "googlechrome",
+//            platform: "XP"
+//        },
+//        {
+//            browserName: "googlechrome",
+//            platform: "linux"
+//        },
+        {
+            browserName: "internet explorer",
+            platform: "WIN8",
+            version: "10"
+        }
+       ,
+        {
+            browserName: "internet explorer",
+            platform: "WIN8",
+            version: "11"
+        }
+    ];
 
     require('load-grunt-tasks')(grunt);
     require('time-grunt')(grunt);
@@ -36,7 +47,7 @@ module.exports = function (grunt) {
         'saucelabs-mocha': {
             all: {
                 options: {
-                    urls: ["http://127.0.0.1:9999/test-mocha/test/browser/opts.html"],
+                    urls: ["http://127.0.0.1:9999/test/index.html"],
                     tunnelTimeout: 5,
                     concurrency: 3,
                     browsers: browsers,
@@ -101,17 +112,6 @@ module.exports = function (grunt) {
             }
         },
 
-        'replace' : {
-            dist: {
-                src: ['<%= build_dir %>/operation.js'],
-                dest: '<%= build_dir %>/operation.js',
-                replacements: [{
-                    from: /^.*require.*underscore.*\n/g,
-                    to: '\n'
-                }]
-            }
-        },
-
         karma: {
             continuous: {
                 configFile: '<%= build_dir %>/karma-unit.js',
@@ -129,21 +129,14 @@ module.exports = function (grunt) {
             }
         },
 
-
         index: {
-
             build: {
                 dir: '<%= test_dir %>',
                 src: [
                     '<%= test_dir %>/**/*.spec.js'
                 ]
             }
-
         }
-
-
-
-
     };
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
@@ -156,9 +149,12 @@ module.exports = function (grunt) {
         'mochaTest:test'
     ]);
 
+    grunt.registerTask('build', [
+        'browserify:build'
+    ]);
+
     grunt.registerTask('compile', [
         'browserify:build',
-        'replace:dist',
         'uglify',
         'copy:dist'
     ]);
@@ -170,8 +166,7 @@ module.exports = function (grunt) {
     }
 
 
-
-    grunt.registerTask("testSauce", ["connect", "saucelabs-mocha"]);
+    grunt.registerTask("testSauce", ['browserify:build', "connect", "index", "saucelabs-mocha"]);
 
 
     grunt.registerMultiTask('index', 'Process index.html template', function () {
@@ -189,8 +184,6 @@ module.exports = function (grunt) {
                 });
             }
         });
-
-
 
     });
 

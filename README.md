@@ -313,37 +313,47 @@ git clone git@github.com:mtford90/operations.js.git
 Then install the dependencies:
 
 ```bash
-cd operations.js
-npm install
-npm install grunt-cli -g
+cd operations.js && npm install && npm install grunt-cli -g
 ```
 
-### node.js tests
+### Tests
 
-We can run the standard batch of tests for node.js by running:
+#### Run
 
-```bash
+We can run the tests by using:
+
+```
 grunt test
 ```
 
-And run them in the browser using:
+This will also build `tests/index.html`. Opening this up in the browser will run the same tests in said browser.
 
-```bash
-grunt testBrowser
+#### Watch
+
+We can watch for changes and automatically build and run the tests by using:
 ```
-
-The browser target can be configured in `karma/karma-unit.tpl.js`.
-
-### Watch
-
-We can watch for changes and run the tests automatically by running:
-
-```bash
 grunt watch
-grunt watchBrowser
+``` 
+
+This is livereload enabled, so we can automatically run the tests in the browser and in the console for NodeJS at the same time.
+
+#### Cross browser
+
+[Saucelabs](https://saucelabs.com) is used for cross-browser testing. These tests are automated via a Travis build but can also be executed via a grunt task provided that you have a Saucelabs account.
+
+First of all setup environment variables with your saucelabs username and API key. This can be placed in your .bashrc file:
+
+```bash
+export SAUCE_USERNAME=...
+export SAUCE_ACCESS_KEY=...
+```
+Then run the grunt task:
+
+```
+grunt testSauce
 ```
 
-Run these commands in two seperate console instances and on any change we can then run the tests against node and the browser simultaneously.
+And then head over to https://saucelabs.com/account where you'll see the tests executing.
 
 
 ## AngularJS bindings
