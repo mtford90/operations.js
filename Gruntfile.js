@@ -231,6 +231,7 @@ module.exports = function (grunt) {
                     urls: ["http://127.0.0.1:9999/test/index.html"],
                     tunnelTimeout: 5,
                     concurrency: 3,
+                    build: process.env.TRAVIS_JOB_ID,
                     browsers: browsers,
                     testname: "mocha tests"
                 }
