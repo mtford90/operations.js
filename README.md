@@ -4,12 +4,11 @@ operations.js
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/mtford.svg)](https://saucelabs.com/u/mtford)
 
+Promises (e.g. [q](https://github.com/kriskowal/q) and libraries such as [async.js](https://github.com/caolan/async) are awesome but have limitations when it comes to defining complex dependencies between your chunks of code.
 
-A library for managing complex chains of asynchronous operations in Javascript for both the browser and node.js
+`operations.js` is a library that allows us to create well defined operations which are wrappers around javascript functions. We can then express dependencies between them, compose them, place them on queues and cancel them at any point during their execution.
 
-Libraries such as [async.js](https://github.com/caolan/async) are awesome, but when attempting to define complex dependencies between your asynchronous callbacks things can quickly get out of hand. 
- 
-Inspired by the [NSOperation](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/Reference/Reference.html) and [NSOperationQueue](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperationQueue_class/Reference/Reference.html) classes in Apple's Cocoa framework, this library is an attempt to solve this problem.
+It is inspired by the [NSOperation](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperation_class/Reference/Reference.html) and [NSOperationQueue](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/NSOperationQueue_class/Reference/Reference.html) classes in Apple's Cocoa framework.
 
 Main features:
 
@@ -17,7 +16,8 @@ Main features:
 * Define dependencies between these operations.
 * Cancellation of operations.
 * Composite operations.
-* Run these operations in queues with limits on concurrency.
+* Run these operations in queues.
+* Limit number of operations running on each queue.
 * Inter-queue dependencies between operations.
 
 ## Contents
