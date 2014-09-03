@@ -147,9 +147,10 @@ describe('OperationQueue', function () {
 
         it('cancel running operations', function () {
             q.stop(true);
-            assert.ok(ops[0].cancelled);
-            assert.ok(ops[1].cancelled);
-            assert.notOk(ops[2].cancelled);
+            console.log(ops);
+            assert.ok(ops[0].cancelled, 'Should cancel first running operation');
+            assert.ok(ops[1].cancelled, 'Should cancel the second running operation');
+            assert.notOk(ops[2].cancelled, 'Should leave the queued operation alone');
         });
 
         it('dont cancel all running operations', function () {

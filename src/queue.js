@@ -53,6 +53,7 @@ OperationQueue.prototype._nextOperations = function () {
     var self = this;
     while ((self._runningOperations.length < self.maxConcurrentOperations) && self._queuedOperations.length) {
         var op = self._queuedOperations[0];
+        self._queuedOperations.splice(0, 1);
         self._runOperation(op);
     }
 };
@@ -70,7 +71,7 @@ OperationQueue.prototype._runOperation = function (op) {
     op.onCompletion(function () {
         var idx = self._runningOperations.indexOf(op);
         self._runningOperations.splice(idx, 1);
-        if (self.running) {
+        if (self._running) {
             self._nextOperations();
         }
         self._logStatus();
