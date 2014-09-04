@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var log = require('./log');
 var Logger = log.loggerWithName('Operation');
 
@@ -304,7 +303,7 @@ Operation.prototype.onCompletion = function (o) {
 Operation.prototype.cancel = function (callback) {
     if (!this.cancelled) {
         this.cancelled = true;
-    Logger.debug('Cancelling '  + this.name, this);
+        Logger.debug('Cancelling ' + this.name, this);
         if (this.composite) {
             _.each(this.work, function (subop) {
                 subop.cancel();

@@ -319,7 +319,7 @@ module.exports = function (grunt) {
                     '<%= test_dir %>/**/*.spec.js'
                 ]
             }
-        }
+        }  
     };
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));

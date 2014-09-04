@@ -1,6 +1,3 @@
-var _ = require('underscore');
-
-
 function Logger (name) {
     if (!this) return new Logger(name);
     this.name = name;

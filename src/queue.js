@@ -1,6 +1,4 @@
 
-var _ = require('underscore');
-
 var log = require('./log');
 var Logger = log.loggerWithName('OperationQueue');
 
