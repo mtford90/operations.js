@@ -59,8 +59,5 @@
     "grunt-contrib-connect": "~0.8.0",
     "grunt-saucelabs": "~8.3.1",
     "jquery": "~2.1.1"
-  },
-  "dependencies": {
-    "underscore": "~1.7.0"
   }
 }

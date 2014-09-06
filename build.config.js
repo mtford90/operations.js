@@ -17,11 +17,5 @@ module.exports = {
             'node_modules/sinon/pkg/sinon.js',
             'node_modules/sinon/pkg/sinon.js'
         ]
-    },
-
-    vendor_files: {
-        js: [
-            'node_modules/underscore/underscore.js'
-        ]
     }
 };
