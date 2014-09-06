@@ -1,14 +1,16 @@
+var utils = require('./utils');
+
 function Logger (name) {
     if (!this) return new Logger(name);
     this.name = name;
 
-    this.trace = constructPerformer(this, _.bind(console.debug ? console.debug : console.log, console), Logger.Level.trace);
-    this.debug = constructPerformer(this, _.bind(console.debug ? console.debug  : console.log, console), Logger.Level.debug);
-    this.info = constructPerformer(this, _.bind(console.info ? console.info : console.log, console), Logger.Level.info);
-    this.log = constructPerformer(this, _.bind(console.log ? console.log : console.log, console), Logger.Level.info);
-    this.warn = constructPerformer(this, _.bind(console.warn ? console.warn : console.log, console), Logger.Level.warning);
-    this.error = constructPerformer(this, _.bind(console.error ? console.error : console.log, console), Logger.Level.error);
-    this.fatal = constructPerformer(this, _.bind(console.error ? console.error : console.log, console), Logger.Level.fatal);
+    this.trace = constructPerformer(this, utils.bind(console.debug ? console.debug : console.log, console), Logger.Level.trace);
+    this.debug = constructPerformer(this, utils.bind(console.debug ? console.debug  : console.log, console), Logger.Level.debug);
+    this.info = constructPerformer(this, utils.bind(console.info ? console.info : console.log, console), Logger.Level.info);
+    this.log = constructPerformer(this, utils.bind(console.log ? console.log : console.log, console), Logger.Level.info);
+    this.warn = constructPerformer(this, utils.bind(console.warn ? console.warn : console.log, console), Logger.Level.warning);
+    this.error = constructPerformer(this, utils.bind(console.error ? console.error : console.log, console), Logger.Level.error);
+    this.fatal = constructPerformer(this, utils.bind(console.error ? console.error : console.log, console), Logger.Level.fatal);
 
 }
 
@@ -78,7 +80,7 @@ Logger.prototype.performLog = function (logFunc, level, message, otherArguments,
     var self = this;
     var currentLevel = override !== undefined ? override : this.currentLevel();
     if (currentLevel <= level) {
-        logFunc = _.partial(logFunc, Logger.levelAsText(level) + ' [' + self.name + ']: ' + message);
+        logFunc = utils.partial(logFunc, Logger.levelAsText(level) + ' [' + self.name + ']: ' + message);
         var args = [];
         for (var i=0; i<otherArguments.length; i++) {
             args[i] = otherArguments[i];

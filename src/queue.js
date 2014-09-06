@@ -1,7 +1,6 @@
-
 var log = require('./log');
 var Logger = log.loggerWithName('OperationQueue');
-
+var utils = require('./utils');
 
 function OperationQueue() {
 
@@ -109,7 +108,7 @@ OperationQueue.prototype._logStart = function () {
 
 OperationQueue.prototype._getLogFunc = function () {
     if (this.logLevel) {
-        return _.bind(Logger.override, Logger, log.Level.info, this.logLevel);
+        return utils.bind(Logger.override, Logger, log.Level.info, this.logLevel);
     }
     return Logger.info;
 };
@@ -136,7 +135,7 @@ OperationQueue.prototype._addOperation = function (op) {
 OperationQueue.prototype.addOperation = function (operationOrOperations) {
     var self = this;
     if (Object.prototype.toString.call(operationOrOperations) === '[object Array]') {
-        _.each(operationOrOperations, function (op) {self._addOperation(op)});
+        utils.each(operationOrOperations, function (op) {self._addOperation(op)});
     }
     else {
         this._addOperation(operationOrOperations);
@@ -148,8 +147,8 @@ OperationQueue.prototype.start = function () {
     var wasRunning = this._running;
     this._running = true;
     if (!wasRunning) {
-        _.each(self._onStart, function (c) {
-            _.bind(c, self)();
+        utils.each(self._onStart, function (c) {
+            utils.bind(c, self)();
         });
         self._nextOperations();
         self._logStart();
@@ -163,13 +162,13 @@ OperationQueue.prototype.stop = function (cancel) {
     if (wasRunning) {
         if (cancel) {
             var operations = this._runningOperations.slice(0); // Clone so not fighting callbacks.
-            _.each(operations, function (o) {
+            utils.each(operations, function (o) {
                 o.cancel();
             });
         }
         self._logStop();
-        _.each(self._onStop, function (c) {
-            _.bind(c, self)();
+        utils.each(self._onStop, function (c) {
+            utils.bind(c, self)();
         });
     }
 };

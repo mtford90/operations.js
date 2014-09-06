@@ -1,5 +1,6 @@
 var log = require('./log');
 var Logger = log.loggerWithName('Operation');
+var utils = require('./utils');
 
 function Operation() {
     if (!this) {
@@ -52,7 +53,7 @@ function Operation() {
                 return self.work.completed ? 0 : 1
             }
             else if (Object.prototype.toString.call(self.work) === '[object Array]') {
-                return _.reduce(self.work, function (memo, op) {
+                return utils.reduce(self.work, function (memo, op) {
                     if (!op.completed) {
                         return memo + 1;
                     }
@@ -70,7 +71,7 @@ function Operation() {
     Object.defineProperty(this, 'canRun', {
         get: function () {
             if (self.dependencies.length) {
-                return _.reduce(self.dependencies, function (memo, dep) {
+                return utils.reduce(self.dependencies, function (memo, dep) {
                     var mustSucceed = self._mustSucceed.indexOf(dep) > -1;
                     var canRun = memo && dep.completed;
                     if (mustSucceed && canRun) {
@@ -88,7 +89,7 @@ function Operation() {
     Object.defineProperty(this, 'failedDueToDependency', {
         get: function () {
             if (self.dependencies.length) {
-                var failedDeps = _.reduce(self.dependencies, function (memo, dep) {
+                var failedDeps = utils.reduce(self.dependencies, function (memo, dep) {
                     var mustSucceed = self._mustSucceed.indexOf(dep) > -1;
                     var failed = ((dep.failed || dep.cancelled) && mustSucceed);
                     if (failed) {
@@ -107,7 +108,7 @@ function Operation() {
     Object.defineProperty(this, 'failedDueToCancellationOfDependency', {
         get: function () {
             if (self.dependencies.length) {
-                var cancelled = _.reduce(self.dependencies, function (memo, dep) {
+                var cancelled = utils.reduce(self.dependencies, function (memo, dep) {
                     var mustSucceed = self._mustSucceed.indexOf(dep) > -1;
                     if (mustSucceed) {
                         if (dep.cancelled) memo.push(dep);
@@ -152,14 +153,14 @@ Operation.prototype._startSingle = function () {
 Operation.prototype._startComposite = function () {
     var self = this;
     var operations = self.work instanceof Operation ? [self.work] : self.work;
-    _.each(operations, function (op) {
+    utils.each(operations, function (op) {
         op.completion = function () {
             var numOperationsRemaining = self.numOperationsRemaining;
             if (!numOperationsRemaining) {
-                var errors = _.pluck(operations, 'error');
-                var results = _.pluck(operations, 'result');
-                self.result = _.some(results) ? results : null;
-                self.error = _.some(errors) ? errors : null;
+                var errors = utils.pluck(operations, 'error');
+                var results = utils.pluck(operations, 'result');
+                self.result = utils.some(results) ? results : null;
+                self.error = utils.some(errors) ? errors : null;
                 self.completed = true;
                 self.running = false;
                 self._complete();
@@ -175,13 +176,13 @@ Operation.prototype._logCompletion = function () {
         var name = this.name || 'Unnamed';
         var failedDependencies = this.failedDueToDependency;
         if (failedDependencies) {
-            logFunc('"' + name + '" failed due to failure/cancellation of dependencies: ' + _.pluck(failedDependencies, 'name').join(', '));
+            logFunc('"' + name + '" failed due to failure/cancellation of dependencies: ' + utils.pluck(failedDependencies, 'name').join(', '));
         }
         else if (this.failed) {
             var err = this.error;
             // Remove null errors.
             if (Object.prototype.toString.call(err) === '[object Array]') {
-                err = _.filter(err, function (e) {return e });
+                err = utils.filter(err, function (e) {return e });
             }
             else {
                 err = [this.error];
@@ -199,7 +200,7 @@ Operation.prototype._logCompletion = function () {
 
 Operation.prototype._getLogFunc = function () {
     if (this.logLevel) {
-        return _.bind(Logger.override, Logger, log.Level.info, this.logLevel);
+        return utils.bind(Logger.override, Logger, log.Level.info, this.logLevel);
     }
     return Logger.info;
 };
@@ -219,11 +220,11 @@ Operation.prototype._complete = function () {
     var idx = Operation.running.indexOf(this);
     Operation.running.splice(idx, 1);
     if (this.completion) {
-        _.bind(this.completion, this)();
+        utils.bind(this.completion, this)();
     }
     this._logCompletion();
-    _.each(this._onCompletion, function (o) {
-        _.bind(o, self)();
+    utils.each(this._onCompletion, function (o) {
+        utils.bind(o, self)();
     });
 };
 
@@ -260,7 +261,7 @@ Operation.prototype.start = function () {
             this.__start();
         }
         else {
-            _.each(this.dependencies, function (dep) {
+            utils.each(this.dependencies, function (dep) {
                 dep.onCompletion(function () {
                     if (self.canRun) {
                         self.__start();
@@ -285,11 +286,11 @@ Operation.prototype.addDependency = function () {
             args = Array.prototype.slice.call(args, 0, args.length - 1);
             mustSucceed = lastArg;
         }
-        _.each(args, function (arg) {
+        utils.each(args, function (arg) {
             self.dependencies.push(arg);
         });
         if (mustSucceed) {
-            _.each(args, function (arg) {
+            utils.each(args, function (arg) {
                 self._mustSucceed.push(arg);
             })
         }
@@ -305,7 +306,7 @@ Operation.prototype.cancel = function (callback) {
         this.cancelled = true;
         Logger.debug('Cancelling ' + this.name, this);
         if (this.composite) {
-            _.each(this.work, function (subop) {
+            utils.each(this.work, function (subop) {
                 subop.cancel();
             });
         }
