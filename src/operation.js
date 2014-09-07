@@ -153,8 +153,10 @@ Operation.prototype._startComposite = function () {
     var self = this;
     var operations = self.work instanceof Operation ? [self.work] : self.work;
     _.each(operations, function (op) {
-        op.completion = function () {
+        op.onCompletion(function () {
             var numOperationsRemaining = self.numOperationsRemaining;
+            var name = self.name || 'Unnamed';
+            Logger.debug(name + ' has ' + numOperationsRemaining.toString() + ' operations remaining');
             if (!numOperationsRemaining) {
                 var errors = _.pluck(operations, 'error');
                 var results = _.pluck(operations, 'result');
@@ -164,7 +166,7 @@ Operation.prototype._startComposite = function () {
                 self.running = false;
                 self._complete();
             }
-        };
+        });
         op.start();
     });
 };
