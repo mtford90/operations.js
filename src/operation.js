@@ -299,7 +299,12 @@ Operation.prototype.addDependency = function () {
 };
 
 Operation.prototype.onCompletion = function (o) {
-    this._onCompletion.push(o);
+    if (!this.completed) {
+        this._onCompletion.push(o);
+    }
+    else {
+        _.bind(o, this)();
+    }
 };
 
 Operation.prototype.cancel = function (callback) {
