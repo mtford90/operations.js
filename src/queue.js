@@ -66,14 +66,14 @@ OperationQueue.prototype._runOperation = function (op) {
         }
     }
     this._runningOperations.push(op);
-    op.onCompletion(function () {
+    op.completion = function () {
         var idx = self._runningOperations.indexOf(op);
         self._runningOperations.splice(idx, 1);
         if (self._running) {
             self._nextOperations();
         }
         self._logStatus();
-    });
+    };
     op.start();
     this._logStatus();
 };
