@@ -44,7 +44,7 @@ describe('examples', function () {
         }
 
         function createLogOperation() {
-            return new Operation('My Logger Operation', function (done) {
+            return new Operation('My LocalCacheLogger Operation', function (done) {
                 console.log('Finished!');
                 done();
             });

@@ -17,7 +17,7 @@ else { // NodeJS
 }
 
 
-describe('Logger', function () {
+describe('LocalCacheLogger', function () {
     it('set level', function () {
         var logger = Logger.loggerWithName('myLogger');
         var myOtherLogger = Logger.loggerWithName('myOtherLogger');
